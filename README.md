@@ -1,25 +1,25 @@
-# TrackStudy — Trabalho 02 (Angular)
+﻿# TrackStudy â€” Trabalho 02 (Angular)
 
 **Membros:** Nelmir Junior e Lucas Bagno
 
-## 1. Descrição
-Aplicação web para organizar disciplinas e tarefas acadêmicas. O usuário cadastra disciplinas, gerencia tarefas (criar, editar, concluir/reabrir, excluir), filtra e acompanha status.
+## 1. DescriÃ§Ã£o
+AplicaÃ§Ã£o web para organizar disciplinas e tarefas acadÃªmicas. O usuÃ¡rio cadastra disciplinas, gerencia tarefas (criar, editar, concluir/reabrir, excluir), filtra e acompanha status.
 
 ## 2. Tecnologias e estrutura
 - Angular (standalone, rotas em `app.routes.ts`, providers em `app.config.ts`).
-- Template próprio (CSS do protótipo).
-- Services com **mock** em memória:
+- Template prÃ³prio (CSS do protÃ³tipo).
+- Services com **mock** em memÃ³ria:
   - `SubjectService` (disciplinas)
   - `TaskService` (tarefas)
 
-## 3. Páginas e funcionalidades
+## 3. PÃ¡ginas e funcionalidades
 ### Login (`/login`)
-- Formulário com `[(ngModel)]`.
+- FormulÃ¡rio com `[(ngModel)]`.
 - Navega para `/dashboard` ao entrar.
 
 ### Dashboard (`/dashboard`)
-- KPIs (totais, concluídas, em andamento, vencidas).
-- Lista “Próximas tarefas”.
+- KPIs (totais, concluÃ­das, em andamento, vencidas).
+- Lista â€œPrÃ³ximas tarefasâ€.
 
 ### Disciplinas (`/disciplinas`)
 - Busca por nome.
@@ -39,18 +39,19 @@ Aplicação web para organizar disciplinas e tarefas acadêmicas. O usuário cad
 - Detalhe da tarefa, **Editar** via prompts.
 
 ### Nova Tarefa (`/nova-tarefa`)
-- Formulário com `[(ngModel)]`; salva e volta à lista.
+- FormulÃ¡rio com `[(ngModel)]`; salva e volta Ã  lista.
 
 ### Perfil (`/perfil`)
-- Formulário demonstrativo.
+- FormulÃ¡rio demonstrativo.
 
-## 4. Padrões de código (exemplos)
+## 4. PadrÃµes de cÃ³digo (exemplos)
 - **Data-binding:** `[(ngModel)]`, `{{ }}`, `(click)`, `[ngClass]`.
 - **Diretivas:** `*ngFor`, `*ngIf`.
 - **Rotas:** `app.routes.ts` (+ `app-routing.module.ts` para conformidade).
-- **Services:** arrays estáticos e métodos `get/add/update/remove/toggleDone`.
+- **Services:** arrays estÃ¡ticos e mÃ©todos `get/add/update/remove/toggleDone`.
 
 ## 5. Como rodar
 ```bash
 npm i
 npx ng serve -o
+
