@@ -1,4 +1,4 @@
-﻿# TrackStudy â€” Trabalho 02 (Angular)
+# TrackStudy â€” Trabalho 02 (Angular)
 
 **Membros:** Nelmir Junior e Lucas Bagno
 
@@ -18,8 +18,8 @@ AplicaÃ§Ã£o web para organizar disciplinas e tarefas acadÃªmicas. O usuÃ�
 - Navega para `/dashboard` ao entrar.
 
 ### Dashboard (`/dashboard`)
-- KPIs (totais, concluÃ­das, em andamento, vencidas).
-- Lista â€œPrÃ³ximas tarefasâ€.
+- KPIs (totais, concluídas, em andamento, vencidas).
+- Lista “Próximas tarefas”.
 
 ### Disciplinas (`/disciplinas`)
 - Busca por nome.
