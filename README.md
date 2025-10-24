@@ -1,20 +1,20 @@
-# TrackStudy â€” Trabalho 02 (Angular)
+# TrackStudy — Trabalho 02 (Angular)
 
 **Membros:** Nelmir Junior e Lucas Bagno
 
-## 1. DescriÃ§Ã£o
-AplicaÃ§Ã£o web para organizar disciplinas e tarefas acadÃªmicas. O usuÃ¡rio cadastra disciplinas, gerencia tarefas (criar, editar, concluir/reabrir, excluir), filtra e acompanha status.
+## 1. Descrição
+Aplicação web para organizar disciplinas e tarefas acadêmicas. O usuário cadastra disciplinas, gerencia tarefas (criar, editar, concluir/reabrir, excluir), filtra e acompanha status.
 
 ## 2. Tecnologias e estrutura
 - Angular (standalone, rotas em `app.routes.ts`, providers em `app.config.ts`).
-- Template prÃ³prio (CSS do protÃ³tipo).
-- Services com **mock** em memÃ³ria:
+- Template próprio (CSS do protótipo).
+- Services com **mock** em memória:
   - `SubjectService` (disciplinas)
   - `TaskService` (tarefas)
 
-## 3. PÃ¡ginas e funcionalidades
+## 3. Páginas e funcionalidades
 ### Login (`/login`)
-- FormulÃ¡rio com `[(ngModel)]`.
+- Formulário com `[(ngModel)]`.
 - Navega para `/dashboard` ao entrar.
 
 ### Dashboard (`/dashboard`)
@@ -39,19 +39,18 @@ AplicaÃ§Ã£o web para organizar disciplinas e tarefas acadÃªmicas. O usuÃ�
 - Detalhe da tarefa, **Editar** via prompts.
 
 ### Nova Tarefa (`/nova-tarefa`)
-- FormulÃ¡rio com `[(ngModel)]`; salva e volta Ã  lista.
+- Formulário com `[(ngModel)]`; salva e volta à lista.
 
 ### Perfil (`/perfil`)
-- FormulÃ¡rio demonstrativo.
+- Formulário demonstrativo.
 
-## 4. PadrÃµes de cÃ³digo (exemplos)
+## 4. Padrões de código (exemplos)
 - **Data-binding:** `[(ngModel)]`, `{{ }}`, `(click)`, `[ngClass]`.
 - **Diretivas:** `*ngFor`, `*ngIf`.
 - **Rotas:** `app.routes.ts` (+ `app-routing.module.ts` para conformidade).
-- **Services:** arrays estÃ¡ticos e mÃ©todos `get/add/update/remove/toggleDone`.
+- **Services:** arrays estáticos e métodos `get/add/update/remove/toggleDone`.
 
 ## 5. Como rodar
 ```bash
 npm i
 npx ng serve -o
-
