@@ -1,6 +1,6 @@
 # TrackStudy — Trabalho 02 (Angular)
 
-**Membros:** _[coloque os nomes]_
+**Membros:** Nelmir Junior e Lucas Bagno
 
 ## 1. Descrição
 Aplicação web para organizar disciplinas e tarefas acadêmicas. O usuário cadastra disciplinas, gerencia tarefas (criar, editar, concluir/reabrir, excluir), filtra e acompanha status.
