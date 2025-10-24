@@ -1,0 +1,22 @@
+<header class="header">
+  <h2 class="h-title">Perfil</h2>
+  <button class="btn danger" routerLink="/login">Sair</button>
+</header>
+
+<section class="card">
+  <form class="form" (ngSubmit)="save()">
+    <label class="label" for="p-name">Nome</label>
+    <input id="p-name" class="field" [(ngModel)]="name" name="name" placeholder="Seu nome">
+
+    <label class="label" for="p-email">E-mail</label>
+    <input id="p-email" class="field" type="email" [(ngModel)]="email" name="email" placeholder="voce@exemplo.com">
+
+    <label class="label" for="p-pass">Senha</label>
+    <input id="p-pass" class="field" type="password" [(ngModel)]="pass" name="pass" placeholder="••••••••">
+
+    <div class="actions">
+      <button class="btn secondary" type="reset">Descartar</button>
+      <button class="btn" type="submit">Salvar</button>
+    </div>
+  </form>
+</section>

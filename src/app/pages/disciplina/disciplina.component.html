@@ -1,0 +1,36 @@
+<header class="header">
+  <h2 class="h-title">{{ title }}</h2>
+  <div class="search">
+    <button class="btn secondary" routerLink="/disciplinas">Voltar</button>
+    <button class="btn" (click)="alert('Protótipo: editar disciplina')">Editar</button>
+  </div>
+</header>
+
+<section class="grid" style="grid-template-columns:1fr">
+  <div class="card">
+    <h3>Professor</h3>
+    <p>{{ teacher || '-' }}</p>
+  </div>
+
+  <div class="card">
+    <h3>Tarefas da disciplina</h3>
+    <table class="table">
+      <thead><tr><th>Tarefa</th><th>Prazo</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr *ngFor="let t of tasks">
+          <td><a [routerLink]="['/tarefa', t.id]">{{ t.title }}</a></td>
+          <td>{{ t.due | date:'shortDate' }}</td>
+          <td>
+            <span class="badge"
+              [ngClass]="{ 'green': t.status==='done', 'red': t.status==='late', 'amber': t.status==='doing', 'blue': t.status==='todo' }">
+              {{ t.status }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="actions" style="margin-top:12px">
+      <a class="btn" routerLink="/nova-tarefa">+ Adicionar Tarefa</a>
+    </div>
+  </div>
+</section>

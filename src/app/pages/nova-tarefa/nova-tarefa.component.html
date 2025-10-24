@@ -1,0 +1,26 @@
+<header class="header">
+  <h2 class="h-title">Nova Tarefa</h2>
+</header>
+
+<section class="card">
+  <form class="form" (ngSubmit)="save()">
+    <label class="label" for="nt-title">Título</label>
+    <input id="nt-title" class="field" [(ngModel)]="title" name="title" placeholder="Ex.: Lista 02 de Cálculo" required>
+
+    <label class="label" for="nt-subject">Disciplina</label>
+    <select id="nt-subject" class="field" [(ngModel)]="subjectId" name="subjectId" required>
+      <option *ngFor="let s of subjects.getAll()" [value]="s.id">{{ s.name }}</option>
+    </select>
+
+    <label class="label" for="nt-date">Data de entrega</label>
+    <input id="nt-date" class="field" type="date" [(ngModel)]="due" name="due" required>
+
+    <label class="label" for="nt-desc">Descrição</label>
+    <textarea id="nt-desc" class="field" rows="5" [(ngModel)]="description" name="description" placeholder="Detalhes da tarefa..."></textarea>
+
+    <div class="actions">
+      <a class="btn secondary" routerLink="/tarefas">Cancelar</a>
+      <button class="btn" type="submit">Salvar</button>
+    </div>
+  </form>
+</section>

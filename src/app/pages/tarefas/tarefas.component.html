@@ -1,0 +1,37 @@
+<header class="header">
+  <h2 class="h-title">Tarefas</h2>
+  <div class="search">
+    <select [(ngModel)]="status" name="status" id="filter-status" class="select">
+      <option value="all">Todas</option>
+      <option value="todo">A fazer</option>
+      <option value="doing">Em andamento</option>
+      <option value="done">Concluídas</option>
+      <option value="late">Vencidas</option>
+    </select>
+    <input [(ngModel)]="q" name="q" id="search-tasks" class="input" type="search" placeholder="Buscar tarefa...">
+    <a class="btn" routerLink="/nova-tarefa">+ Nova Tarefa</a>
+  </div>
+</header>
+
+<section class="card">
+  <table class="table">
+    <thead><tr><th>Título</th><th>Disciplina</th><th>Prazo</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let t of list()">
+        <td><a [routerLink]="['/tarefa', t.id]">{{ t.title }}</a></td>
+        <td>{{ subjectName(t.subjectId) }}</td>
+        <td>{{ t.due | date:'shortDate' }}</td>
+        <td>
+          <span class="badge"
+            [ngClass]="{ 'green': t.status==='done', 'red': t.status==='late', 'amber': t.status==='doing', 'blue': t.status==='todo' }">
+            {{ t.status }}
+          </span>
+        </td>
+        <td class="actions">
+          <button class="btn success" (click)="toggleDone(t.id)">{{ t.status==='done' ? 'Reabrir' : 'Concluir' }}</button>
+          <button class="btn danger" (click)="remove(t.id)">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

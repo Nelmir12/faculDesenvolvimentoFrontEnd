@@ -1,59 +1,56 @@
-# TrackStudy
+# TrackStudy — Trabalho 02 (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.7.
+**Membros:** _[coloque os nomes]_
 
-## Development server
+## 1. Descrição
+Aplicação web para organizar disciplinas e tarefas acadêmicas. O usuário cadastra disciplinas, gerencia tarefas (criar, editar, concluir/reabrir, excluir), filtra e acompanha status.
 
-To start a local development server, run:
+## 2. Tecnologias e estrutura
+- Angular (standalone, rotas em `app.routes.ts`, providers em `app.config.ts`).
+- Template próprio (CSS do protótipo).
+- Services com **mock** em memória:
+  - `SubjectService` (disciplinas)
+  - `TaskService` (tarefas)
 
+## 3. Páginas e funcionalidades
+### Login (`/login`)
+- Formulário com `[(ngModel)]`.
+- Navega para `/dashboard` ao entrar.
+
+### Dashboard (`/dashboard`)
+- KPIs (totais, concluídas, em andamento, vencidas).
+- Lista “Próximas tarefas”.
+
+### Disciplinas (`/disciplinas`)
+- Busca por nome.
+- **Criar**, **Editar**, **Excluir** disciplina.
+- Link para detalhe.
+
+### Disciplina (`/disciplina/:id`)
+- Professor e tarefas da disciplina.
+- Link para criar nova tarefa.
+
+### Tarefas (`/tarefas`)
+- Listagem com filtro por **status** e **busca**.
+- **Concluir/Reabrir**, **Excluir**.
+- Link para detalhe.
+
+### Tarefa (`/tarefa/:id`)
+- Detalhe da tarefa, **Editar** via prompts.
+
+### Nova Tarefa (`/nova-tarefa`)
+- Formulário com `[(ngModel)]`; salva e volta à lista.
+
+### Perfil (`/perfil`)
+- Formulário demonstrativo.
+
+## 4. Padrões de código (exemplos)
+- **Data-binding:** `[(ngModel)]`, `{{ }}`, `(click)`, `[ngClass]`.
+- **Diretivas:** `*ngFor`, `*ngIf`.
+- **Rotas:** `app.routes.ts` (+ `app-routing.module.ts` para conformidade).
+- **Services:** arrays estáticos e métodos `get/add/update/remove/toggleDone`.
+
+## 5. Como rodar
 ```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+npm i
+npx ng serve -o

@@ -1,0 +1,24 @@
+<header class="header">
+  <h2 class="h-title">Disciplinas</h2>
+  <div class="search">
+    <input [(ngModel)]="q" name="q" id="search-subjects" class="input" type="search" placeholder="Buscar disciplina...">
+    <button class="btn" type="button" (click)="newSubject()">+ Nova Disciplina</button>
+  </div>
+</header>
+
+<section class="card">
+  <table class="table">
+    <thead><tr><th>Disciplina</th><th>Professor</th><th>Tarefas</th><th>Ações</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let s of list()">
+        <td><a [routerLink]="['/disciplina', s.id]">{{ s.name }}</a></td>
+        <td>{{ s.teacher || '-' }}</td>
+        <td>{{ s.tasks.length }}</td>
+        <td class="actions">
+          <button class="btn secondary" (click)="editSubject(s.id)">Editar</button>
+          <button class="btn danger" (click)="deleteSubject(s.id)">Excluir</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

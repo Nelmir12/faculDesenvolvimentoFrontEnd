@@ -1,0 +1,41 @@
+<ng-container *ngIf="t as task; else notfound">
+  <header class="header">
+    <h2 class="h-title">{{ task.title }}</h2>
+    <div class="search">
+      <button class="btn secondary" routerLink="/tarefas">Voltar</button>
+      <button class="btn" (click)="edit()">Editar</button>
+    </div>
+  </header>
+
+  <section class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card">
+      <h3>Disciplina</h3>
+      <p>{{ subjectName(task.subjectId) }}</p>
+
+      <h3>Data de entrega</h3>
+      <p>{{ task.due | date:'shortDate' }}</p>
+
+      <h3>Status</h3>
+      <p>
+        <span class="badge"
+              [ngClass]="{
+                'green': task.status==='done',
+                'red'  : task.status==='late',
+                'amber': task.status==='doing',
+                'blue' : task.status==='todo'
+              }">
+          {{ task.status }}
+        </span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Descrição</h3>
+      <p>{{ task.description || 'Texto livre da tarefa (objetivo, materiais, páginas, observações).' }}</p>
+    </div>
+  </section>
+</ng-container>
+
+<ng-template #notfound>
+  <p>Tarefa não encontrada.</p>
+</ng-template>

@@ -1,0 +1,32 @@
+<header class="header">
+  <h2 class="h-title">Dashboard</h2>
+</header>
+
+<section class="grid cards">
+  <div class="card"><h3>Tarefas totais</h3><div id="kpi-total" class="kpi">{{ total }}</div></div>
+  <div class="card"><h3>Concluídas</h3><div id="kpi-done" class="kpi">{{ done }}</div></div>
+  <div class="card"><h3>Em andamento</h3><div id="kpi-doing" class="kpi">{{ doing }}</div></div>
+  <div class="card"><h3>Vencidas</h3><div id="kpi-late" class="kpi">{{ late }}</div></div>
+</section>
+
+<br/>
+
+<section class="card">
+  <h3>Próximas tarefas</h3>
+  <table class="table">
+    <thead><tr><th>Tarefa</th><th>Disciplina</th><th>Prazo</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr *ngFor="let t of next">
+        <td><a [routerLink]="['/tarefa', t.id]">{{ t.title }}</a></td>
+        <td>{{ subjectName(t.subjectId) }}</td>
+        <td>{{ t.due | date:'shortDate' }}</td>
+        <td>
+          <span class="badge"
+            [ngClass]="{ 'green': t.status==='done', 'red': t.status==='late', 'amber': t.status==='doing', 'blue': t.status==='todo' }">
+            {{ t.status }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>

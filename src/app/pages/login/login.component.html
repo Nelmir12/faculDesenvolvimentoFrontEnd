@@ -1,0 +1,26 @@
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand" style="margin-bottom:12px">
+      <div class="brand-logo">TS</div>
+      <h1>TrackStudy</h1>
+    </div>
+    <p class="help">Acompanhe suas disciplinas e tarefas com organização.</p>
+
+    <form class="form" (ngSubmit)="entrar()">
+      <label class="label" for="email">E-mail</label>
+      <input id="email" class="field" type="email" [(ngModel)]="email" name="email" placeholder="voce@exemplo.com" required>
+
+      <label class="label" for="senha">Senha</label>
+      <input id="senha" class="field" type="password" [(ngModel)]="senha" name="senha" placeholder="••••••••" required>
+
+      <div class="helper-row">
+        <a href="#" class="help">Esqueceu a senha?</a>
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit">Entrar</button>
+      </div>
+    </form>
+
+    <footer class="note">Protótipo estático — login simulado</footer>
+  </div>
+</div>
