@@ -4,4 +4,12 @@ out-tsc/
 node_modules/
 .vscode/
 .DS_Store
+Thumbs.dbnode_modules/
+dist/
+.angular/
+out-tsc/
+.vscode/
+*.log
+*.zip
 Thumbs.db
+.DS_Store
