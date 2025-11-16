@@ -1,38 +1,63 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, map } from 'rxjs';
 
-export type Status = 'todo' | 'doing' | 'done' | 'late';
 export interface Task {
-  id: number; title: string; subjectId: number; due: string; status: Status; description?: string;
+  id: number;
+  title: string;
+  description: string;
+  status: 'pendente' | 'concluida';
+  subjectId: number;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class TaskService {
-  // ✅ sem dados iniciais (app "zerado")
-  private tasks: Task[] = [];
+  private apiUrl = 'http://localhost:3000/tasks';
 
-  getAll() { return [...this.tasks]; }
-  getById(id:number) { return this.tasks.find(t=>t.id===id) || null; }
+  constructor(private http: HttpClient) {}
 
-  add(data: Omit<Task,'id'>) {
-    const id = Math.max(...this.tasks.map(x=>x.id), 0) + 1; // funciona com lista vazia
-    const t: Task = { id, ...data };
-    this.tasks.push(t);
-    return t;
+  getAll(): Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl);
   }
 
-  update(id:number, data: Partial<Task>) {
-    const i = this.tasks.findIndex(t=>t.id===id);
-    if (i < 0) return null;
-    this.tasks[i] = { ...this.tasks[i], ...data };
-    return this.tasks[i];
+  getById(id: number): Observable<Task> {
+    return this.http.get<Task>(`${this.apiUrl}/${id}`);
   }
 
-  remove(id:number) { this.tasks = this.tasks.filter(t=>t.id!==id); }
+  getBySubject(subjectId: number): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.apiUrl}?subjectId=${subjectId}`);
+  }
 
-  toggleDone(id:number) {
-    const t = this.getById(id);
-    if (!t) return null;
-    t.status = (t.status === 'done' ? 'todo' : 'done');
-    return t;
+  create(task: Task): Observable<Task> {
+    return this.http.post<Task>(this.apiUrl, task);
+  }
+
+  update(id: number, task: Task): Observable<Task> {
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, task);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  search(term: string): Observable<Task[]> {
+    return this.http.get<Task[]>(this.apiUrl).pipe(
+      map((tasks) =>
+        tasks.filter((t) =>
+          t.title.toLowerCase().includes(term.toLowerCase())
+        )
+      )
+    );
+  }
+
+  toggleDone(task: Task): Observable<Task> {
+    const updated = {
+      ...task,
+      status: task.status === 'pendente' ? 'concluida' : 'pendente',
+    };
+
+    return this.http.put<Task>(`${this.apiUrl}/${task.id}`, updated);
   }
 }

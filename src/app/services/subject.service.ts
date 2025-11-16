@@ -1,31 +1,48 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, map } from 'rxjs';
 
 export interface Subject {
-  id: number; name: string; teacher?: string; tasks: number[];
+  id: number;
+  name: string;
+  description: string;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class SubjectService {
-  private subjects: Subject[] = [];
+  private apiUrl = 'http://localhost:3000/subjects';
 
-  getAll() { return [...this.subjects]; }
-  getById(id:number) { return this.subjects.find(s=>s.id===id) || null; }
+  constructor(private http: HttpClient) {}
 
-  add(s: Omit<Subject,'id'>) {
-    const id = Math.max(...this.subjects.map(x=>x.id), 0) + 1; // funciona com lista vazia
-    const subj: Subject = { id, ...s };
-    this.subjects.push(subj);
-    return subj;
+  getAll(): Observable<Subject[]> {
+    return this.http.get<Subject[]>(this.apiUrl);
   }
 
-  update(id:number, data: Partial<Subject>) {
-    const i = this.subjects.findIndex(s=>s.id===id);
-    if (i < 0) return null;
-    this.subjects[i] = { ...this.subjects[i], ...data };
-    return this.subjects[i];
+  getById(id: number): Observable<Subject> {
+    return this.http.get<Subject>(`${this.apiUrl}/${id}`);
   }
 
-  remove(id:number) {
-    this.subjects = this.subjects.filter(s=>s.id!==id);
+  create(subject: Subject): Observable<Subject> {
+    return this.http.post<Subject>(this.apiUrl, subject);
+  }
+
+  update(id: number, subject: Subject): Observable<Subject> {
+    return this.http.put<Subject>(`${this.apiUrl}/${id}`, subject);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  search(term: string): Observable<Subject[]> {
+    return this.http.get<Subject[]>(this.apiUrl).pipe(
+      map((subjects) =>
+        subjects.filter((s) =>
+          s.name.toLowerCase().includes(term.toLowerCase())
+        )
+      )
+    );
   }
 }

@@ -1,55 +1,69 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { SubjectService } from '../../services/subject.service';
-import { TaskService } from '../../services/task.service';
+import { Component, OnInit } from '@angular/core';
+import { Subject, SubjectService } from '../../services/subject.service';
 
 @Component({
   selector: 'app-disciplinas',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
-  templateUrl: './disciplinas.component.html'
+  templateUrl: './disciplinas.component.html',
+  styleUrls: ['./disciplinas.component.css'],
 })
-export class DisciplinasComponent {
-  q = '';
-  constructor(public svc: SubjectService, private tasks: TaskService) {}
+export class DisciplinasComponent implements OnInit {
+  subjects: Subject[] = [];
+  filteredSubjects: Subject[] = [];
+  searchTerm: string = '';
+  loading = false;
+  error = '';
 
-  list() {
-    return this.svc.getAll().filter(s =>
-      s.name.toLowerCase().includes(this.q.toLowerCase())
+  constructor(private subjectService: SubjectService) {}
+
+  ngOnInit(): void {
+    this.loadSubjects();
+  }
+
+  loadSubjects(): void {
+    this.loading = true;
+    this.error = '';
+
+    this.subjectService.getAll().subscribe({
+      next: (subjects) => {
+        this.subjects = subjects;
+        this.applyFilter();
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Erro ao carregar disciplinas.';
+        this.loading = false;
+      },
+    });
+  }
+
+  onSearchChange(): void {
+    this.applyFilter();
+  }
+
+  applyFilter(): void {
+    if (!this.searchTerm) {
+      this.filteredSubjects = this.subjects;
+      return;
+    }
+
+    const term = this.searchTerm.toLowerCase();
+    this.filteredSubjects = this.subjects.filter((s) =>
+      s.name.toLowerCase().includes(term)
     );
   }
 
-  // NOVA DISCIPLINA
-  newSubject() {
-    const name = (window.prompt('Nome da disciplina:') || '').trim();
-    if (!name) return;
-    const teacher = (window.prompt('Professor(a):') || '').trim();
-    this.svc.add({ name, teacher, tasks: [] });
-  }
+  deleteSubject(subject: Subject): void {
+    if (!confirm(`Deseja realmente excluir a disciplina "${subject.name}"?`)) {
+      return;
+    }
 
-  // EDITAR
-  editSubject(id: number) {
-    const s = this.svc.getById(id);
-    if (!s) return;
-    const name = window.prompt('Nome da disciplina:', s.name);
-    if (name === null) return;
-    const teacher = window.prompt('Professor(a):', s.teacher || '') ?? '';
-    this.svc.update(id, { name: name.trim(), teacher: teacher.trim() });
-  }
-
-  // EXCLUIR (remove também as tarefas vinculadas)
-  deleteSubject(id: number) {
-    const s = this.svc.getById(id);
-    if (!s) return;
-    if (!window.confirm(`Excluir "${s.name}" e todas as suas tarefas?`)) return;
-
-    // remove tarefas daquela disciplina
-    this.tasks.getAll().filter(t => t.subjectId === id)
-      .forEach(t => this.tasks.remove(t.id));
-
-    // remove a disciplina
-    this.svc.remove(id);
+    this.subjectService.delete(subject.id).subscribe({
+      next: () => {
+        this.loadSubjects();
+      },
+      error: () => {
+        this.error = 'Erro ao excluir disciplina.';
+      },
+    });
   }
 }

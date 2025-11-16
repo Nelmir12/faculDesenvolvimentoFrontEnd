@@ -1,0 +1,30 @@
+{
+  "subjects": [
+    {
+      "id": 1,
+      "name": "Algoritmos e Estruturas de Dados",
+      "description": "Introdução à lógica, vetores, listas e árvores."
+    },
+    {
+      "id": 2,
+      "name": "Cálculo I",
+      "description": "Limites, derivadas e aplicações."
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Lista 1 – Vetores",
+      "description": "Resolver 15 exercícios sobre vetores",
+      "status": "pendente",
+      "subjectId": 1
+    },
+    {
+      "id": 2,
+      "title": "Derivadas – Exercícios",
+      "description": "Levar folha de resolução para aula",
+      "status": "pendente",
+      "subjectId": 2
+    }
+  ]
+}
