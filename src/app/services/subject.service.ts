@@ -16,10 +16,12 @@ export class SubjectService {
     { id: 1, name: 'Matemática', teacher: 'Carlos' }
   ]);
 
+  /** Listar todas */
   getAll(): Observable<Subject[]> {
     return this.subjects$.asObservable();
   }
 
+  /** Buscar por ID */
   getById(id: number): Observable<Subject | undefined> {
     return new Observable(sub => {
       const result = this.subjects$.value.find(s => s.id === id);
@@ -28,8 +30,10 @@ export class SubjectService {
     });
   }
 
+  /** Criar disciplina */
   create(data: Omit<Subject, 'id'>): Observable<Subject> {
     const current = this.subjects$.value;
+
     const newSubject: Subject = {
       ...data,
       id: current.length > 0 ? Math.max(...current.map(s => s.id)) + 1 : 1
@@ -38,5 +42,32 @@ export class SubjectService {
     this.subjects$.next([...current, newSubject]);
 
     return new BehaviorSubject(newSubject).asObservable();
+  }
+
+  /** Atualizar disciplina */
+  update(id: number, data: Partial<Subject>): Observable<Subject> {
+    const current = this.subjects$.value;
+    const index = current.findIndex(s => s.id === id);
+
+    if (index === -1) throw new Error('Disciplina não encontrada.');
+
+    const updated: Subject = {
+      ...current[index],
+      ...data
+    };
+
+    current[index] = updated;
+
+    this.subjects$.next([...current]);
+
+    return new BehaviorSubject(updated).asObservable();
+  }
+
+  /** Remover disciplina */
+  delete(id: number): Observable<void> {
+    const updated = this.subjects$.value.filter(s => s.id !== id);
+    this.subjects$.next(updated);
+
+    return new BehaviorSubject<void>(undefined).asObservable();
   }
 }

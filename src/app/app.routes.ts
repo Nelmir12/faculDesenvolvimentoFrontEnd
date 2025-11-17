@@ -5,7 +5,7 @@ import { LoginComponent } from './pages/login/login.component';
 
 import { DisciplinaComponent } from './pages/disciplina/disciplina.component';
 import { DisciplinasComponent } from './pages/disciplinas/disciplinas.component';
-
+import { EditarDisciplinaComponent } from './pages/disciplinas/editar-disciplina.component';
 import { NovaDisciplinaComponent } from './pages/disciplinas/nova-disciplina.component';
 
 
@@ -28,6 +28,9 @@ export const routes: Routes = [
 
 // Editar disciplina
 { path: 'disciplina/:id', component: DisciplinaComponent },
+
+{ path: 'disciplina/:id', component: EditarDisciplinaComponent },
+
 
 
 
