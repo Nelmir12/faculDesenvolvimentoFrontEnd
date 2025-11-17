@@ -1,0 +1,30 @@
+.disciplina-container {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+label {
+  font-weight: bold;
+  margin-top: 12px;
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+}
+
+button {
+  margin-top: 20px;
+  margin-right: 10px;
+}
+
+.erro {
+  color: red;
+  font-size: 13px;
+}

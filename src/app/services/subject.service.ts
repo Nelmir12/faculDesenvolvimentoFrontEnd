@@ -1,48 +1,42 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface Subject {
   id: number;
   name: string;
-  description: string;
+  teacher?: string;
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class SubjectService {
-  private apiUrl = 'http://localhost:3000/subjects';
 
-  constructor(private http: HttpClient) {}
+  private subjects$ = new BehaviorSubject<Subject[]>([
+    { id: 1, name: 'Matemática', teacher: 'Carlos' }
+  ]);
 
   getAll(): Observable<Subject[]> {
-    return this.http.get<Subject[]>(this.apiUrl);
+    return this.subjects$.asObservable();
   }
 
-  getById(id: number): Observable<Subject> {
-    return this.http.get<Subject>(`${this.apiUrl}/${id}`);
+  getById(id: number): Observable<Subject | undefined> {
+    return new Observable(sub => {
+      const result = this.subjects$.value.find(s => s.id === id);
+      sub.next(result);
+      sub.complete();
+    });
   }
 
-  create(subject: Subject): Observable<Subject> {
-    return this.http.post<Subject>(this.apiUrl, subject);
-  }
+  create(data: Omit<Subject, 'id'>): Observable<Subject> {
+    const current = this.subjects$.value;
+    const newSubject: Subject = {
+      ...data,
+      id: current.length > 0 ? Math.max(...current.map(s => s.id)) + 1 : 1
+    };
 
-  update(id: number, subject: Subject): Observable<Subject> {
-    return this.http.put<Subject>(`${this.apiUrl}/${id}`, subject);
-  }
+    this.subjects$.next([...current, newSubject]);
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  search(term: string): Observable<Subject[]> {
-    return this.http.get<Subject[]>(this.apiUrl).pipe(
-      map((subjects) =>
-        subjects.filter((s) =>
-          s.name.toLowerCase().includes(term.toLowerCase())
-        )
-      )
-    );
+    return new BehaviorSubject(newSubject).asObservable();
   }
 }

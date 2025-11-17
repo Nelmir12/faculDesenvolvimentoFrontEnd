@@ -1,0 +1,25 @@
+<div class="disciplina-container">
+
+  <h2>Criar Disciplina</h2>
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+
+    <label>Nome da Disciplina *</label>
+    <input type="text" formControlName="name" />
+    <div class="erro" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+      Campo obrigatório.
+    </div>
+
+    <label>Professor (opcional)</label>
+    <input type="text" formControlName="teacher" />
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">Salvar</button>
+      <button type="button" (click)="cancelar()">Cancelar</button>
+    </div>
+
+    <p class="erro" *ngIf="error">{{ error }}</p>
+
+  </form>
+
+</div>
