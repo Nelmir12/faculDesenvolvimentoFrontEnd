@@ -1,0 +1,28 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Exemplo",
+      "description": "Tarefa inicial",
+      "due": "2024-12-01",
+      "subjectId": 1,
+      "status": "pendente"
+    }
+  ],
+
+  "subjects": [
+    {
+      "id": 1,
+      "name": "Matemática",
+      "teacher": "Carlos"
+    }
+  ],
+
+  "users": [
+    {
+      "id": 1,
+      "email": "teste@teste.com",
+      "password": "123456"
+    }
+  ]
+}

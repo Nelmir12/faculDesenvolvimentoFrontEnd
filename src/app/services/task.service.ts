@@ -1,5 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { Task, TaskStatus } from './task.model';
 
 @Injectable({
@@ -7,92 +8,45 @@ import { Task, TaskStatus } from './task.model';
 })
 export class TaskService {
 
-  private tasks$ = new BehaviorSubject<Task[]>([
-    {
-      id: 1,
-      title: 'Exemplo',
-      description: 'Tarefa inicial',
-      due: '2024-12-01',
-      subjectId: 1,
-      status: 'pendente'
-    }
-  ]);
+  private API = 'http://localhost:3001/tasks';
 
-  /** Retorna todas as tarefas */
+  constructor(private http: HttpClient) {}
+
+  /** Listar todas as tarefas */
   getAll(): Observable<Task[]> {
-    return this.tasks$.asObservable();
+    return this.http.get<Task[]>(this.API);
   }
 
-  /** Busca tarefa por ID */
-  getById(id: number): Observable<Task | undefined> {
-    return new Observable(sub => {
-      const result = this.tasks$.value.find(t => t.id === id);
-      sub.next(result);
-      sub.complete();
-    });
+  /** Buscar tarefa por ID */
+  getById(id: number): Observable<Task> {
+    return this.http.get<Task>(`${this.API}/${id}`);
   }
 
-  /** Criar nova tarefa */
-  create(data: Partial<Task>): Observable<Task> {
-    const current = this.tasks$.value;
-
-    const newTask: Task = {
-      id: current.length > 0 ? Math.max(...current.map(t => t.id)) + 1 : 1,
-      title: data.title ?? '',
-      description: data.description ?? '',
-      due: data.due ?? '',
-      subjectId: data.subjectId ?? 0,
-      status: (data.status as TaskStatus) ?? 'pendente'
-    };
-
-    this.tasks$.next([...current, newTask]);
-
-    return new BehaviorSubject(newTask).asObservable();
+  /** Criar tarefa */
+  create(data: Omit<Task, 'id'>): Observable<Task> {
+    return this.http.post<Task>(this.API, data);
   }
 
-  /** Atualiza uma tarefa existente */
+  /** Atualizar tarefa */
   update(id: number, data: Partial<Task>): Observable<Task> {
-    const current = this.tasks$.value;
-    const index = current.findIndex(t => t.id === id);
-
-    if (index === -1) throw new Error('Tarefa não encontrada');
-
-    const updated: Task = {
-      ...current[index],
-      ...data
-    };
-
-    current[index] = updated;
-
-    this.tasks$.next([...current]);
-
-    return new BehaviorSubject(updated).asObservable();
+    return this.http.patch<Task>(`${this.API}/${id}`, data);
   }
 
-  /** Alternar status pendente <-> concluida */
+  /** Alternar status pendente <-> concluída */
   toggleDone(id: number): Observable<Task> {
-    const current = this.tasks$.value;
-    const index = current.findIndex(t => t.id === id);
+    return this.getById(id).pipe(
+      switchMap(task => {
+        const newStatus: TaskStatus =
+          task.status === 'pendente' ? 'concluida' : 'pendente';
 
-    if (index === -1) throw new Error('Tarefa não encontrada');
-
-    const updated: Task = {
-      ...current[index],
-      status: current[index].status === 'pendente'
-        ? 'concluida'
-        : 'pendente'
-    };
-
-    current[index] = updated;
-    this.tasks$.next([...current]);
-
-    return new BehaviorSubject(updated).asObservable();
+        // aqui o tipo bate com Partial<Task> (status: TaskStatus)
+        return this.update(id, { status: newStatus });
+      })
+    );
   }
 
-  /** Remove uma tarefa */
+  /** Remover tarefa */
   remove(id: number): Observable<void> {
-    const updated = this.tasks$.value.filter(t => t.id !== id);
-    this.tasks$.next(updated);
-    return new BehaviorSubject<void>(undefined).asObservable();
+    return this.http.delete<void>(`${this.API}/${id}`);
   }
 }
