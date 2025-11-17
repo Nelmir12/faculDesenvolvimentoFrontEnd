@@ -11,6 +11,7 @@
         formControlName="name"
         [class.invalid]="name?.invalid && (name?.touched || name?.dirty)"
       />
+
       <div class="error" *ngIf="name?.errors && (name?.touched || name?.dirty)">
         <span *ngIf="name?.errors?.['required']">O nome é obrigatório.</span>
         <span *ngIf="name?.errors?.['minlength']">
@@ -44,8 +45,7 @@
         </span>
         <span *ngIf="description?.errors?.['minlength']">
           A descrição deve ter pelo menos
-          {{ description?.errors?.['minlength']?.requiredLength }}
-          caracteres.
+          {{ description?.errors?.['minlength']?.requiredLength }} caracteres.
         </span>
       </div>
     </div>

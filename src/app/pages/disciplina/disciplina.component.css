@@ -4,7 +4,7 @@
   padding: 24px;
 }
 
-.disciplina-page h1 {
+h1 {
   margin-bottom: 16px;
 }
 
@@ -42,8 +42,8 @@
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .actions button {
@@ -53,5 +53,4 @@
 
 .loading {
   margin-top: 8px;
-  font-size: 14px;
 }

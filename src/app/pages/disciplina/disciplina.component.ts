@@ -4,7 +4,7 @@ import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, SubjectService } from '../../services/subject.service';
@@ -66,7 +66,7 @@ export class DisciplinaComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        this.error = 'Erro ao carregar disciplina.';
+        this.error = 'Erro ao carregar a disciplina.';
         this.loading = false;
       },
     });
