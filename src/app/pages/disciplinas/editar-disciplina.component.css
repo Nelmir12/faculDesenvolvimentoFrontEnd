@@ -1,0 +1,15 @@
+.erro {
+  color: red;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+input {
+  width: 100%;
+  padding: 6px;
+  margin-bottom: 10px;
+}

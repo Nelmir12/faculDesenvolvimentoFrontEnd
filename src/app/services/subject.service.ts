@@ -1,9 +1,12 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
 
 export interface Subject {
   id: number;
   name: string;
+  /** descrição da disciplina (opcional no dado cru, mas obrigatória no formulário) */
+  description?: string;
   teacher?: string;
 }
 
@@ -12,62 +15,46 @@ export interface Subject {
 })
 export class SubjectService {
 
-  private subjects$ = new BehaviorSubject<Subject[]>([
-    { id: 1, name: 'Matemática', teacher: 'Carlos' }
-  ]);
+  /** Endpoint do JSON Server para disciplinas */
+  private API = 'http://localhost:3001/subjects';
 
-  /** Listar todas */
+  constructor(private http: HttpClient) {}
+
+  /** Listar todas as disciplinas */
   getAll(): Observable<Subject[]> {
-    return this.subjects$.asObservable();
+    return this.http.get<Subject[]>(this.API);
   }
 
-  /** Buscar por ID */
+  /**
+   * Buscar disciplina por ID
+   *
+   * Mantemos Observable<Subject | undefined> para ficar compatível
+   * com a assinatura antiga baseada em BehaviorSubject.
+   * Se o JSON Server devolver 404, retornamos `undefined`.
+   */
   getById(id: number): Observable<Subject | undefined> {
-    return new Observable(sub => {
-      const result = this.subjects$.value.find(s => s.id === id);
-      sub.next(result);
-      sub.complete();
-    });
+    return this.http.get<Subject>(`${this.API}/${id}`).pipe(
+      catchError(error => {
+        if (error.status === 404) {
+          return of(undefined);
+        }
+        return throwError(() => error);
+      })
+    );
   }
 
   /** Criar disciplina */
   create(data: Omit<Subject, 'id'>): Observable<Subject> {
-    const current = this.subjects$.value;
-
-    const newSubject: Subject = {
-      ...data,
-      id: current.length > 0 ? Math.max(...current.map(s => s.id)) + 1 : 1
-    };
-
-    this.subjects$.next([...current, newSubject]);
-
-    return new BehaviorSubject(newSubject).asObservable();
+    return this.http.post<Subject>(this.API, data);
   }
 
   /** Atualizar disciplina */
   update(id: number, data: Partial<Subject>): Observable<Subject> {
-    const current = this.subjects$.value;
-    const index = current.findIndex(s => s.id === id);
-
-    if (index === -1) throw new Error('Disciplina não encontrada.');
-
-    const updated: Subject = {
-      ...current[index],
-      ...data
-    };
-
-    current[index] = updated;
-
-    this.subjects$.next([...current]);
-
-    return new BehaviorSubject(updated).asObservable();
+    return this.http.patch<Subject>(`${this.API}/${id}`, data);
   }
 
   /** Remover disciplina */
   delete(id: number): Observable<void> {
-    const updated = this.subjects$.value.filter(s => s.id !== id);
-    this.subjects$.next(updated);
-
-    return new BehaviorSubject<void>(undefined).asObservable();
+    return this.http.delete<void>(`${this.API}/${id}`);
   }
 }

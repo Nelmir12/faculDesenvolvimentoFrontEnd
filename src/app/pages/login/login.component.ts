@@ -1,42 +1,76 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
-export class LoginComponent {
-
+export class LoginComponent implements OnInit {
   form!: FormGroup;
+  loading = false;
   error = '';
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
-  ) {
+    private userService: UserService,
+    private router: Router,
+  ) {}
+
+  ngOnInit(): void {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(4)]]
+      password: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
-  submit() {
+  get emailControl() {
+    return this.form.get('email');
+  }
+
+  get passwordControl() {
+    return this.form.get('password');
+  }
+
+  entrar(): void {
     if (this.form.invalid) {
-      this.error = 'Preencha todos os campos corretamente.';
+      this.form.markAllAsTouched();
       return;
     }
 
-    // Simulação de login básico
-    const { email, senha } = this.form.value;
-    if (email === 'admin@teste.com' && senha === '1234') {
-      this.router.navigate(['/dashboard']);
-    } else {
-      this.error = 'Credenciais inválidas.';
-    }
+    this.loading = true;
+    this.error = '';
+
+    const { email, password } = this.form.value;
+
+    this.userService.login(email, password).subscribe({
+      next: (user) => {
+        this.loading = false;
+
+        if (!user) {
+          this.error = 'E-mail ou senha inválidos.';
+          return;
+        }
+
+        // Guardar usuário atual (simples, só pra Perfil e navegação)
+        localStorage.setItem('currentUser', JSON.stringify(user));
+
+        this.router.navigate(['/dashboard']);
+      },
+      error: () => {
+        this.error = 'Erro ao tentar fazer login.';
+        this.loading = false;
+      }
+    });
   }
 }

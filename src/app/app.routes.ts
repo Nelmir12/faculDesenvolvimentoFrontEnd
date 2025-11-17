@@ -5,10 +5,8 @@ import { LoginComponent } from './pages/login/login.component';
 
 import { DisciplinaComponent } from './pages/disciplina/disciplina.component';
 import { DisciplinasComponent } from './pages/disciplinas/disciplinas.component';
-import { EditarDisciplinaComponent } from './pages/disciplinas/editar-disciplina.component';
-import { NovaDisciplinaComponent } from './pages/disciplinas/nova-disciplina.component';
 
-
+import { NovaTarefaComponent } from './pages/nova-tarefa/nova-tarefa.component';
 import { TarefaComponent } from './pages/tarefa/tarefa.component';
 import { TarefasComponent } from './pages/tarefas/tarefas.component';
 
@@ -20,23 +18,13 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard', component: DashboardComponent },
 
+  { path: 'disciplinas', component: DisciplinasComponent },
+  { path: 'disciplina/nova', component: DisciplinaComponent },
+  { path: 'disciplina/:id', component: DisciplinaComponent },
 
-{ path: 'disciplinas', component: DisciplinasComponent },
-
-// Criar disciplina
-{ path: 'disciplina/nova', component: NovaDisciplinaComponent },
-
-// Editar disciplina
-{ path: 'disciplina/:id', component: DisciplinaComponent },
-
-{ path: 'disciplina/:id', component: EditarDisciplinaComponent },
-
-
-
-
-{ path: 'tarefas', component: TarefasComponent },
-{ path: 'tarefa/nova', component: TarefaComponent },
-{ path: 'tarefa/:id', component: TarefaComponent },
+  { path: 'tarefas', component: TarefasComponent },
+  { path: 'tarefa/nova', component: NovaTarefaComponent },
+  { path: 'tarefa/:id', component: TarefaComponent },
 
   { path: 'perfil', component: PerfilComponent },
 

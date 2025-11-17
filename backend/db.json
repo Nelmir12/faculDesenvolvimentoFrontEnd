@@ -7,22 +7,34 @@
       "due": "2024-12-01",
       "subjectId": 1,
       "status": "pendente"
+    },
+    {
+      "id": "52ea",
+      "title": "trabalho track study",
+      "description": "finalizar a apresentação",
+      "due": "2025-11-18",
+      "subjectId": "299d",
+      "status": "pendente"
     }
   ],
-
   "subjects": [
     {
       "id": 1,
       "name": "Matemática",
+      "description": "Disciplina de cálculo, álgebra, etc.",
       "teacher": "Carlos"
+    },
+    {
+      "id": "299d",
+      "name": "front-end",
+      "teacher": "dangelo"
     }
   ],
-
   "users": [
     {
-      "id": 1,
-      "email": "teste@teste.com",
-      "password": "123456"
+      "name": "admin",
+      "email": "aluno@fumec.br",
+      "password": "123"
     }
   ]
 }

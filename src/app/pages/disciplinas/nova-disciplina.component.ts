@@ -1,8 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { SubjectService } from '../../services/subject.service';
+import { Subject, SubjectService } from '../../services/subject.service';
 
 @Component({
   selector: 'app-nova-disciplina',
@@ -11,10 +16,11 @@ import { SubjectService } from '../../services/subject.service';
   templateUrl: './nova-disciplina.component.html',
   styleUrls: ['./nova-disciplina.component.css']
 })
-export class NovaDisciplinaComponent {
+export class NovaDisciplinaComponent implements OnInit {
 
   form!: FormGroup;
   error = '';
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -22,25 +28,45 @@ export class NovaDisciplinaComponent {
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.form = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       teacher: ['']
     });
   }
 
-  salvar() {
+  get nameControl() {
+    return this.form.get('name');
+  }
+
+  salvar(): void {
     if (this.form.invalid) {
-      this.error = 'Preencha o nome da disciplina.';
+      this.form.markAllAsTouched();
+      this.error = 'Preencha corretamente os campos obrigatórios.';
       return;
     }
 
-    this.subjects.create(this.form.value).subscribe(() => {
-      this.router.navigate(['/disciplinas']);
+    this.loading = true;
+    this.error = '';
+
+    const payload: Omit<Subject, 'id'> = this.form.value;
+
+    this.subjects.create(payload).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/disciplinas']);
+      },
+      error: () => {
+        this.error = 'Erro ao criar disciplina.';
+        this.loading = false;
+      }
     });
   }
 
-  cancelar() {
+  cancelar(): void {
+    if (this.loading) {
+      return;
+    }
     this.router.navigate(['/disciplinas']);
   }
 }

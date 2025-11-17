@@ -1,26 +1,39 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 export interface Subject {
-  id: number; name: string; teacher?: string; tasks: number[];
+  id: number;
+  name: string;
+  teacher?: string;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class SubjectService {
-  private subjects: Subject[] = [
-    { id:1, name:'Cálculo I',            teacher:'Prof. A', tasks:[1,2,5] },
-    { id:2, name:'Estruturas de Dados',  teacher:'Prof. B', tasks:[3,6]   },
-    { id:3, name:'Desenvolvimento Web',  teacher:'Dângelo', tasks:[4,7,8] },
-    { id:4, name:'Banco de Dados',       teacher:'Prof. C', tasks:[]      },
-  ];
-  getAll() { return [...this.subjects]; }
-  getById(id:number) { return this.subjects.find(s=>s.id===id) || null; }
-  add(s: Omit<Subject,'id'>) {
-    const id = Math.max(...this.subjects.map(x=>x.id), 0)+1;
-    const subj: Subject = { id, ...s }; this.subjects.push(subj); return subj;
+
+  private API = 'http://localhost:3001/subjects';
+
+  constructor(private http: HttpClient) {}
+
+  getAll(): Observable<Subject[]> {
+    return this.http.get<Subject[]>(this.API);
   }
-  update(id:number, data: Partial<Subject>) {
-    const i = this.subjects.findIndex(s=>s.id===id); if(i<0) return null;
-    this.subjects[i] = { ...this.subjects[i], ...data }; return this.subjects[i];
+
+  getById(id: number): Observable<Subject> {
+    return this.http.get<Subject>(`${this.API}/${id}`);
   }
-  remove(id:number) { this.subjects = this.subjects.filter(s=>s.id!==id); }
+
+  create(data: Omit<Subject, 'id'>): Observable<Subject> {
+    return this.http.post<Subject>(this.API, data);
+  }
+
+  update(id: number, data: Partial<Subject>): Observable<Subject> {
+    return this.http.patch<Subject>(`${this.API}/${id}`, data);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API}/${id}`);
+  }
 }

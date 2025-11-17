@@ -1,8 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SubjectService } from '../../services/subject.service';
+import { Subject, SubjectService } from '../../services/subject.service';
 import { TaskService } from '../../services/task.service';
 
 @Component({
@@ -12,13 +17,14 @@ import { TaskService } from '../../services/task.service';
   templateUrl: './tarefa.component.html',
   styleUrls: ['./tarefa.component.css']
 })
-export class TarefaComponent {
+export class TarefaComponent implements OnInit {
   form!: FormGroup;
   id!: number;
 
   loading = true;
+  saving = false;
   error = '';
-  subjectsCache: any[] = [];
+  subjectsCache: Subject[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -28,18 +34,32 @@ export class TarefaComponent {
     private subjects: SubjectService
   ) {}
 
-  ngOnInit() {
-    this.id = Number(this.route.snapshot.paramMap.get('id'));
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const parsedId = Number(idParam);
+
+    if (!idParam || Number.isNaN(parsedId)) {
+      this.error = 'ID de tarefa inválido.';
+      this.loading = false;
+      return;
+    }
+
+    this.id = parsedId;
 
     this.form = this.fb.group({
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
       due: ['', Validators.required],
       subjectId: [null, Validators.required],
       status: ['pendente', Validators.required]
     });
 
-    this.subjects.getAll().subscribe(s => (this.subjectsCache = s));
+    this.subjects.getAll().subscribe({
+      next: s => (this.subjectsCache = s),
+      error: () => {
+        this.error = 'Erro ao carregar disciplinas para seleção.';
+      }
+    });
 
     this.tasks.getById(this.id).subscribe({
       next: task => {
@@ -66,25 +86,53 @@ export class TarefaComponent {
     });
   }
 
-  salvar() {
-    if (this.form.invalid) return;
+  get titleControl() {
+    return this.form.get('title');
+  }
 
-    this.tasks.update(this.id, this.form.value).subscribe(() => {
-      this.router.navigate(['/tarefas']);
+  get dueControl() {
+    return this.form.get('due');
+  }
+
+  get subjectIdControl() {
+    return this.form.get('subjectId');
+  }
+
+  salvar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.saving = true;
+    this.error = '';
+
+    this.tasks.update(this.id, this.form.value).subscribe({
+      next: () => {
+        this.saving = false;
+        this.router.navigate(['/tarefas']);
+      },
+      error: () => {
+        this.error = 'Erro ao salvar tarefa.';
+        this.saving = false;
+      }
     });
   }
 
-  alternarStatus() {
+  alternarStatus(): void {
     const atual = this.form.get('status')?.value;
     const novo = atual === 'pendente' ? 'concluida' : 'pendente';
     this.form.patchValue({ status: novo });
   }
 
-  cancelar() {
+  cancelar(): void {
+    if (this.saving) {
+      return;
+    }
     this.router.navigate(['/tarefas']);
   }
 
-  getSubjectName(id: number) {
+  getSubjectName(id: number): string {
     return this.subjectsCache.find(s => s.id === id)?.name ?? '-';
   }
 }

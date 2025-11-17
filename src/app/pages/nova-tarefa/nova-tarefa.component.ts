@@ -1,53 +1,97 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { SubjectService } from '../../services/subject.service';
+import { Subject, SubjectService } from '../../services/subject.service';
+import { TaskStatus } from '../../services/task.model';
 import { TaskService } from '../../services/task.service';
-
 
 @Component({
   selector: 'app-nova-tarefa',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, NgIf, NgFor, ReactiveFormsModule],
   templateUrl: './nova-tarefa.component.html',
   styleUrls: ['./nova-tarefa.component.css']
 })
 export class NovaTarefaComponent implements OnInit {
-
   form!: FormGroup;
-  subjects: any[] = [];
+  loading = false;
   error = '';
+  subjectsCache: Subject[] = [];
 
   constructor(
     private fb: FormBuilder,
     private tasks: TaskService,
-    private subj: SubjectService,
+    private subjects: SubjectService,
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.form = this.fb.group({
-      title: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
+      due: ['', Validators.required],
       subjectId: [null, Validators.required],
-      dueDate: ['', Validators.required],
-      status: ['pendente', Validators.required]
     });
 
-    this.subj.getAll().subscribe(list => {
-      this.subjects = list;
+    this.subjects.getAll().subscribe({
+      next: s => (this.subjectsCache = s),
+      error: () => {
+        this.error = 'Erro ao carregar disciplinas.';
+      }
     });
   }
 
-  submit() {
+  get titleControl() {
+    return this.form.get('title');
+  }
+
+  get dueControl() {
+    return this.form.get('due');
+  }
+
+  get subjectIdControl() {
+    return this.form.get('subjectId');
+  }
+
+  salvar(): void {
     if (this.form.invalid) {
-      this.error = 'Preencha todos os campos obrigatórios.';
+      this.form.markAllAsTouched();
       return;
     }
 
-    this.tasks.add(this.form.value).subscribe(() => {
-      this.router.navigate(['/tarefas']);
+    this.loading = true;
+    this.error = '';
+
+    const { title, description, due, subjectId } = this.form.value;
+
+    const payload = {
+      title,
+      description,
+      due,
+      subjectId,
+      status: 'pendente' as TaskStatus,
+    };
+
+    this.tasks.create(payload).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/tarefas']);
+      },
+      error: () => {
+        this.error = 'Erro ao criar tarefa.';
+        this.loading = false;
+      }
     });
+  }
+
+  cancelar(): void {
+    if (this.loading) return;
+    this.router.navigate(['/tarefas']);
   }
 }

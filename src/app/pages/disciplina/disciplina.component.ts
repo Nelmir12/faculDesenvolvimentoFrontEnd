@@ -35,15 +35,24 @@ export class DisciplinaComponent implements OnInit {
 
     const idParam = this.route.snapshot.paramMap.get('id');
 
-    if (idParam === 'nova') {
+    // Cenário 1: rota antiga /disciplina/nova usando param 'nova'
+    // Cenário 2: rota nova /disciplina/nova (sem param 'id')
+    // Cenário 3: edição /disciplina/:id (id numérico)
+    if (!idParam || idParam === 'nova') {
       this.isNew = true;
-    } else if (idParam) {
-      this.isNew = false;
-      this.disciplinaId = Number(idParam);
-      this.loadDisciplina(this.disciplinaId);
-    } else {
-      this.router.navigate(['/disciplinas']);
+      return;
     }
+
+    const id = Number(idParam);
+
+    if (Number.isNaN(id)) {
+      this.router.navigate(['/disciplinas']);
+      return;
+    }
+
+    this.isNew = false;
+    this.disciplinaId = id;
+    this.loadDisciplina(id);
   }
 
   buildForm(): void {
@@ -53,15 +62,29 @@ export class DisciplinaComponent implements OnInit {
     });
   }
 
+  get nameControl() {
+    return this.form.get('name');
+  }
+
+  get descriptionControl() {
+    return this.form.get('description');
+  }
+
   loadDisciplina(id: number): void {
     this.loading = true;
     this.error = '';
 
     this.subjectService.getById(id).subscribe({
-      next: (disciplina: Subject) => {
+      next: (disciplina) => {
+        if (!disciplina) {
+          this.error = 'Disciplina não encontrada.';
+          this.loading = false;
+          return;
+        }
+
         this.form.patchValue({
           name: disciplina.name,
-          description: disciplina.description,
+          description: disciplina.description ?? '',
         });
         this.loading = false;
       },
@@ -78,15 +101,20 @@ export class DisciplinaComponent implements OnInit {
       return;
     }
 
-    const payload: Subject = {
-      id: this.isNew ? 0 : this.disciplinaId,
-      ...this.form.value,
+    const { name, description } = this.form.value as {
+      name: string;
+      description: string;
     };
 
     this.loading = true;
     this.error = '';
 
     if (this.isNew) {
+      const payload: Omit<Subject, 'id'> = {
+        name,
+        description,
+      };
+
       this.subjectService.create(payload).subscribe({
         next: () => this.router.navigate(['/disciplinas']),
         error: () => {
@@ -95,6 +123,11 @@ export class DisciplinaComponent implements OnInit {
         },
       });
     } else {
+      const payload: Partial<Subject> = {
+        name,
+        description,
+      };
+
       this.subjectService.update(this.disciplinaId, payload).subscribe({
         next: () => this.router.navigate(['/disciplinas']),
         error: () => {
@@ -106,6 +139,9 @@ export class DisciplinaComponent implements OnInit {
   }
 
   cancelar(): void {
+    if (this.loading) {
+      return;
+    }
     this.router.navigate(['/disciplinas']);
   }
 }

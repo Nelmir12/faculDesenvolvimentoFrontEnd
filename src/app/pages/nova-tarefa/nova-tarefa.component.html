@@ -1,36 +1,69 @@
-<h2>Nova Tarefa</h2>
+<div class="tarefa-container">
+  <h2>Nova Tarefa</h2>
 
-<form [formGroup]="form" (ngSubmit)="submit()">
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+    <label for="title">Título *</label>
+    <input
+      id="title"
+      type="text"
+      formControlName="title"
+      [class.invalid]="titleControl?.invalid && titleControl?.touched"
+    />
+    <div class="erro" *ngIf="titleControl?.invalid && titleControl?.touched">
+      <span *ngIf="titleControl?.errors?.['required']">
+        O título é obrigatório.
+      </span>
+      <span *ngIf="titleControl?.errors?.['minlength']">
+        O título deve ter pelo menos 3 caracteres.
+      </span>
+    </div>
 
-  <label>Título *</label>
-  <input formControlName="title" />
-  <div class="erro" *ngIf="form.get('title')?.invalid && form.get('title')?.touched">
-    Campo obrigatório.
-  </div>
+    <label for="description">Descrição</label>
+    <textarea id="description" formControlName="description"></textarea>
 
-  <label>Descrição</label>
-  <textarea formControlName="description"></textarea>
+    <label for="due">Data de entrega *</label>
+    <input
+      id="due"
+      type="date"
+      formControlName="due"
+      [class.invalid]="dueControl?.invalid && dueControl?.touched"
+    />
+    <div class="erro" *ngIf="dueControl?.invalid && dueControl?.touched">
+      <span *ngIf="dueControl?.errors?.['required']">
+        A data de entrega é obrigatória.
+      </span>
+    </div>
 
-  <label>Disciplina *</label>
-  <select formControlName="subjectId">
-    <option value="">Selecione</option>
-    <option *ngFor="let s of subjects" [value]="s.id">
-      {{ s.name }}
-    </option>
-  </select>
+    <label for="subjectId">Disciplina *</label>
+    <select
+      id="subjectId"
+      formControlName="subjectId"
+      [class.invalid]="subjectIdControl?.invalid && subjectIdControl?.touched"
+    >
+      <option value="">Selecione...</option>
+      <option *ngFor="let s of subjectsCache" [value]="s.id">
+        {{ s.name }}
+      </option>
+    </select>
+    <div
+      class="erro"
+      *ngIf="subjectIdControl?.invalid && subjectIdControl?.touched"
+    >
+      <span *ngIf="subjectIdControl?.errors?.['required']">
+        Selecione uma disciplina.
+      </span>
+    </div>
 
-  <div class="erro" *ngIf="form.get('subjectId')?.invalid && form.get('subjectId')?.touched">
-    Escolha uma disciplina.
-  </div>
+    <p class="error" *ngIf="error">{{ error }}</p>
+    <p class="loading" *ngIf="loading">Salvando...</p>
 
-  <label>Data de entrega *</label>
-  <input type="date" formControlName="dueDate" />
-
-  <div class="erro" *ngIf="form.get('dueDate')?.invalid && form.get('dueDate')?.touched">
-    Informe uma data válida.
-  </div>
-
-  <button type="submit" [disabled]="form.invalid">Salvar</button>
-
-  <p class="erro" *ngIf="error">{{ error }}</p>
-</form>
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid || loading">
+        Salvar
+      </button>
+      <button type="button" (click)="cancelar()" [disabled]="loading">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,23 @@
+<div class="disciplina-container" *ngIf="!loading">
+
+  <h2>Editar Disciplina</h2>
+
+  <form [formGroup]="form" (ngSubmit)="salvar()">
+
+    <label>Nome da disciplina</label>
+    <input type="text" formControlName="name" />
+
+    <div class="erro" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+      Campo obrigatório.
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">Salvar</button>
+      <button type="button" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+
+</div>
+
+<div *ngIf="loading" class="loading">Carregando...</div>
+<div *ngIf="error" class="error">{{ error }}</div>

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -7,7 +7,8 @@ import { Subject, SubjectService } from '../../services/subject.service';
 @Component({
   selector: 'app-disciplinas',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  // IMPORTANTE: NgIf e NgFor adicionados aqui
+  imports: [CommonModule, NgIf, NgFor, FormsModule, RouterModule],
   templateUrl: './disciplinas.component.html',
   styleUrls: ['./disciplinas.component.css'],
 })
@@ -45,12 +46,13 @@ export class DisciplinasComponent implements OnInit {
   }
 
   applyFilter(): void {
-    if (!this.searchTerm) {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    if (!term) {
       this.filteredSubjects = this.subjects;
       return;
     }
 
-    const term = this.searchTerm.toLowerCase();
     this.filteredSubjects = this.subjects.filter((s) =>
       s.name.toLowerCase().includes(term)
     );

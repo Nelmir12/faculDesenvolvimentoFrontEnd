@@ -1,22 +1,56 @@
-<h2>Login</h2>
+<div class="login-page">
+  <h1>TrackStudy</h1>
+  <h2>Entrar</h2>
 
-<form [formGroup]="form" (ngSubmit)="submit()">
+  <form [formGroup]="form" (ngSubmit)="entrar()">
+    <div class="form-group">
+      <label for="email">E-mail</label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        [class.invalid]="emailControl?.invalid && emailControl?.touched"
+      />
 
-  <label>Email</label>
-  <input type="email" formControlName="email" />
+      <div class="field-error" *ngIf="emailControl?.invalid && emailControl?.touched">
+        <span *ngIf="emailControl?.errors?.['required']">
+          E-mail é obrigatório.
+        </span>
+        <span *ngIf="emailControl?.errors?.['email']">
+          Informe um e-mail válido.
+        </span>
+      </div>
+    </div>
 
-  <div class="erro" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-    Email inválido.
-  </div>
+    <div class="form-group">
+      <label for="password">Senha</label>
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        [class.invalid]="passwordControl?.invalid && passwordControl?.touched"
+      />
 
-  <label>Senha</label>
-  <input type="password" formControlName="senha" />
+      <div class="field-error" *ngIf="passwordControl?.invalid && passwordControl?.touched">
+        <span *ngIf="passwordControl?.errors?.['required']">
+          Senha é obrigatória.
+        </span>
+        <span *ngIf="passwordControl?.errors?.['minlength']">
+          A senha deve ter pelo menos 3 caracteres.
+        </span>
+      </div>
+    </div>
 
-  <div class="erro" *ngIf="form.get('senha')?.invalid && form.get('senha')?.touched">
-    Mínimo de 4 caracteres.
-  </div>
+    <div class="field-error" *ngIf="error">
+      {{ error }}
+    </div>
 
-  <button type="submit" [disabled]="form.invalid">Entrar</button>
+    <div class="loading" *ngIf="loading">
+      Entrando...
+    </div>
 
-  <p class="erro" *ngIf="error">{{ error }}</p>
-</form>
+    <button type="submit" [disabled]="form.invalid || loading">
+      Entrar
+    </button>
+  </form>
+</div>

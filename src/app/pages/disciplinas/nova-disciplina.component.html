@@ -1,25 +1,37 @@
 <div class="disciplina-container">
-
   <h2>Criar Disciplina</h2>
 
   <form [formGroup]="form" (ngSubmit)="salvar()">
+    <label for="name">Nome da Disciplina *</label>
+    <input
+      id="name"
+      type="text"
+      formControlName="name"
+      [class.invalid]="nameControl?.invalid && nameControl?.touched"
+    />
 
-    <label>Nome da Disciplina *</label>
-    <input type="text" formControlName="name" />
-    <div class="erro" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
-      Campo obrigatório.
+    <div class="erro" *ngIf="nameControl?.invalid && nameControl?.touched">
+      <span *ngIf="nameControl?.errors?.['required']">
+        Campo obrigatório.
+      </span>
+      <span *ngIf="nameControl?.errors?.['minlength']">
+        O nome deve ter pelo menos 3 caracteres.
+      </span>
     </div>
 
-    <label>Professor (opcional)</label>
-    <input type="text" formControlName="teacher" />
-
-    <div class="actions">
-      <button type="submit" [disabled]="form.invalid">Salvar</button>
-      <button type="button" (click)="cancelar()">Cancelar</button>
-    </div>
+    <label for="teacher">Professor (opcional)</label>
+    <input id="teacher" type="text" formControlName="teacher" />
 
     <p class="erro" *ngIf="error">{{ error }}</p>
+    <p class="loading" *ngIf="loading">Salvando...</p>
 
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid || loading">
+        Salvar
+      </button>
+      <button type="button" (click)="cancelar()" [disabled]="loading">
+        Cancelar
+      </button>
+    </div>
   </form>
-
 </div>

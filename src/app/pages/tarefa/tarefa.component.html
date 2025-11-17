@@ -1,38 +1,77 @@
 <div class="tarefa-container" *ngIf="!loading">
-
   <h2>Editar Tarefa</h2>
 
   <form [formGroup]="form" (ngSubmit)="salvar()">
+    <label for="title">Título *</label>
+    <input
+      id="title"
+      type="text"
+      formControlName="title"
+      [class.invalid]="titleControl?.invalid && titleControl?.touched"
+    />
+    <div class="erro" *ngIf="titleControl?.invalid && titleControl?.touched">
+      <span *ngIf="titleControl?.errors?.['required']">
+        O título é obrigatório.
+      </span>
+      <span *ngIf="titleControl?.errors?.['minlength']">
+        O título deve ter pelo menos 3 caracteres.
+      </span>
+    </div>
 
-    <label>Título</label>
-    <input type="text" formControlName="title" />
+    <label for="description">Descrição</label>
+    <textarea id="description" formControlName="description"></textarea>
 
-    <label>Descrição</label>
-    <textarea formControlName="description"></textarea>
+    <label for="due">Data de entrega *</label>
+    <input
+      id="due"
+      type="date"
+      formControlName="due"
+      [class.invalid]="dueControl?.invalid && dueControl?.touched"
+    />
+    <div class="erro" *ngIf="dueControl?.invalid && dueControl?.touched">
+      <span *ngIf="dueControl?.errors?.['required']">
+        A data de entrega é obrigatória.
+      </span>
+    </div>
 
-    <label>Data de entrega</label>
-    <input type="date" formControlName="due" />
-
-    <label>Disciplina</label>
-    <select formControlName="subjectId">
+    <label for="subjectId">Disciplina *</label>
+    <select
+      id="subjectId"
+      formControlName="subjectId"
+      [class.invalid]="subjectIdControl?.invalid && subjectIdControl?.touched"
+    >
+      <option value="">Selecione...</option>
       <option *ngFor="let s of subjectsCache" [value]="s.id">
         {{ s.name }}
       </option>
     </select>
+    <div
+      class="erro"
+      *ngIf="subjectIdControl?.invalid && subjectIdControl?.touched"
+    >
+      <span *ngIf="subjectIdControl?.errors?.['required']">
+        Selecione uma disciplina.
+      </span>
+    </div>
 
     <label>Status</label>
     <button type="button" (click)="alternarStatus()">
-      {{ form.value.status === 'pendente' ? 'Marcar como concluída' : 'Marcar como pendente' }}
+      {{ form.value.status === 'pendente'
+        ? 'Marcar como concluída'
+        : 'Marcar como pendente' }}
     </button>
 
+    <p class="error" *ngIf="error">{{ error }}</p>
+
     <div class="actions">
-      <button type="submit" [disabled]="form.invalid">Salvar</button>
-      <button type="button" (click)="cancelar()">Cancelar</button>
+      <button type="submit" [disabled]="form.invalid || saving">
+        Salvar
+      </button>
+      <button type="button" (click)="cancelar()" [disabled]="saving">
+        Cancelar
+      </button>
     </div>
-
   </form>
-
 </div>
 
 <div *ngIf="loading" class="loading">Carregando...</div>
-<div *ngIf="error" class="error">{{ error }}</div>
