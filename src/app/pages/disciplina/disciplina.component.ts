@@ -108,12 +108,4 @@ export class DisciplinaComponent implements OnInit {
   cancelar(): void {
     this.router.navigate(['/disciplinas']);
   }
-
-  get name() {
-    return this.form.get('name');
-  }
-
-  get description() {
-    return this.form.get('description');
-  }
 }

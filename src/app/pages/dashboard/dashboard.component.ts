@@ -1,25 +1,52 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+
 import { SubjectService } from '../../services/subject.service';
 import { Task, TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './dashboard.component.html'
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css'],
+  imports: [CommonModule]
 })
 export class DashboardComponent implements OnInit {
-  total=0; done=0; doing=0; late=0; next: Task[] = [];
-  constructor(private tasks: TaskService, private subjects: SubjectService){}
-  ngOnInit(){
-    const list = this.tasks.getAll();
-    this.total = list.length;
-    this.done  = list.filter(t=>t.status==='done').length;
-    this.doing = list.filter(t=>t.status==='doing').length;
-    this.late  = list.filter(t=>t.status==='late').length;
-    this.next  = [...list].sort((a,b)=>a.due.localeCompare(b.due)).slice(0,5);
+
+  tasks: Task[] = [];
+  total = 0;
+  pendentes = 0;
+  concluidas = 0;
+  proximas: Task[] = [];
+
+  constructor(
+    private tasksService: TaskService,
+    private subjects: SubjectService
+  ) {}
+
+  ngOnInit() {
+    this.tasksService.getAll().subscribe(list => {
+      this.tasks = list;
+      this.calculateStats();
+    });
   }
-  subjectName(id:number){ return this.subjects.getById(id)?.name || '-'; }
+
+  calculateStats() {
+    this.total = this.tasks.length;
+    this.pendentes = this.tasks.filter(t => t.status === 'pendente').length;
+    this.concluidas = this.tasks.filter(t => t.status === 'concluida').length;
+
+    this.proximas = [...this.tasks]
+      .filter(t => t.status === 'pendente')
+      .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+      .slice(0, 5);
+  }
+
+ getSubjectName(id: number) {
+  let name = '-';
+  this.subjects.getById(id).subscribe(s => {
+    if (s) name = s.name;
+  });
+  return name;
+}
 }

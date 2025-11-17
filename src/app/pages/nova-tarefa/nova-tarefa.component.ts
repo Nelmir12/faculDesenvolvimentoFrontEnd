@@ -1,60 +1,52 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { SubjectService } from '../../services/subject.service';
 import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-nova-tarefa',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './nova-tarefa.component.html'
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './nova-tarefa.component.html',
+  styleUrls: ['./nova-tarefa.component.css']
 })
 export class NovaTarefaComponent implements OnInit {
-  title = '';
-  subjectId: number | null = null;   // ✅ começa sem disciplina
-  due = '';
-  description = '';
-  status: 'todo'|'doing'|'done'|'late' = 'todo';
+
+  form!: FormGroup;
+  subjects: any[] = [];
+  error = '';
 
   constructor(
+    private fb: FormBuilder,
     private tasks: TaskService,
-    public subjects: SubjectService,
+    private subj: SubjectService,
     private router: Router
-  ){}
+  ) {}
 
   ngOnInit() {
-    const list = this.subjects.getAll();
-    // se houver disciplinas, seleciona a primeira; se não houver, avisa e redireciona
-    if (list.length > 0) {
-      this.subjectId = list[0].id;
-    } else {
-      window.alert('Cadastre uma disciplina antes de criar tarefas.');
-      this.router.navigate(['/disciplinas']);
-    }
+    this.form = this.fb.group({
+      title: ['', Validators.required],
+      description: [''],
+      subjectId: [null, Validators.required],
+      dueDate: ['', Validators.required],
+      status: ['pendente', Validators.required]
+    });
+
+    this.subj.getAll().subscribe(list => {
+      this.subjects = list;
+    });
   }
 
-  save(){
-    // proteção extra
-    const list = this.subjects.getAll();
-    if (list.length === 0 || this.subjectId === null) {
-      window.alert('Cadastre uma disciplina antes de criar tarefas.');
-      this.router.navigate(['/disciplinas']);
+  submit() {
+    if (this.form.invalid) {
+      this.error = 'Preencha todos os campos obrigatórios.';
       return;
     }
 
-    const t = this.tasks.add({
-      title: this.title,
-      subjectId: this.subjectId,
-      due: this.due,
-      status: this.status,
-      description: this.description
+    this.tasks.add(this.form.value).subscribe(() => {
+      this.router.navigate(['/tarefas']);
     });
-
-    const s = this.subjects.getById(this.subjectId);
-    if (s) s.tasks.push(t.id);
-
-    this.router.navigate(['/tarefas']);
   }
 }

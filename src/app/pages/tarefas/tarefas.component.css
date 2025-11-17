@@ -4,10 +4,6 @@
   padding: 24px;
 }
 
-.tarefas-page h1 {
-  margin-bottom: 16px;
-}
-
 .toolbar {
   display: flex;
   gap: 12px;
@@ -19,30 +15,15 @@
   padding: 8px;
 }
 
-.toolbar select,
-.toolbar button {
-  padding: 8px 12px;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px;
 }
 
 th,
 td {
   padding: 8px;
   border-bottom: 1px solid #ddd;
-}
-
-.status {
-  margin-top: 8px;
-}
-
-.status.error {
-  color: #b00020;
-  font-weight: 600;
 }
 
 .pendente {
@@ -53,4 +34,9 @@ td {
 .concluida {
   color: #0a7b20;
   font-weight: 600;
+}
+
+.error {
+  color: #b00020;
+  margin-top: 8px;
 }

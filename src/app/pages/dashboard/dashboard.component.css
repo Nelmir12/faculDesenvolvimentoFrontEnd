@@ -1,0 +1,22 @@
+.kpis {
+  display: flex;
+  gap: 20px;
+}
+
+.kpi {
+  background: #eee;
+  padding: 10px;
+  border-radius: 6px;
+  width: 150px;
+  text-align: center;
+}
+
+.yellow {
+  color: #d6a400;
+  font-weight: bold;
+}
+
+.green {
+  color: #0b9a44;
+  font-weight: bold;
+}

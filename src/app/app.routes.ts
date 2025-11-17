@@ -23,9 +23,9 @@ export const routes: Routes = [
   { path: 'disciplina/:id', component: DisciplinaComponent },
 
 
-  { path: 'tarefas', component: TarefasComponent },
-  { path: 'tarefa/nova', component: TarefaComponent },
-  { path: 'tarefa/:id', component: TarefaComponent },
+{ path: 'tarefas', component: TarefasComponent },
+{ path: 'tarefa/nova', component: TarefaComponent },
+{ path: 'tarefa/:id', component: TarefaComponent },
 
   { path: 'perfil', component: PerfilComponent },
 
