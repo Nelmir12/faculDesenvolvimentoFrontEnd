@@ -11,20 +11,22 @@
       "description": "Limites, derivadas e aplicações."
     }
   ],
-  "tasks": [
-    {
-      "id": 1,
-      "title": "Lista 1 – Vetores",
-      "description": "Resolver 15 exercícios sobre vetores",
-      "status": "pendente",
-      "subjectId": 1
-    },
-    {
-      "id": 2,
-      "title": "Derivadas – Exercícios",
-      "description": "Levar folha de resolução para aula",
-      "status": "pendente",
-      "subjectId": 2
-    }
-  ]
+"tasks": [
+  {
+    "id": 1,
+    "title": "Revisar Angular",
+    "description": "Estudar reactive forms e HttpClient.",
+    "status": "pendente",
+    "dueDate": "2025-11-20",
+    "subjectId": 1
+  },
+  {
+    "id": 2,
+    "title": "Lista de Cálculo",
+    "description": "Finalizar exercícios da lista 3.",
+    "status": "concluida",
+    "dueDate": "2025-11-10",
+    "subjectId": 2
+  }
+]
 }

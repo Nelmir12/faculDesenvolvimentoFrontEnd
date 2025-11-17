@@ -7,6 +7,7 @@ export interface Task {
   title: string;
   description: string;
   status: 'pendente' | 'concluida';
+  dueDate: string; // formato 'YYYY-MM-DD'
   subjectId: number;
 }
 
@@ -31,7 +32,10 @@ export class TaskService {
   }
 
   create(task: Task): Observable<Task> {
-    return this.http.post<Task>(this.apiUrl, task);
+    // JSON Server ignora o id e cria um novo
+    const payload = { ...task };
+    delete (payload as any).id;
+    return this.http.post<Task>(this.apiUrl, payload);
   }
 
   update(id: number, task: Task): Observable<Task> {
@@ -43,17 +47,23 @@ export class TaskService {
   }
 
   search(term: string): Observable<Task[]> {
+    const lower = term.toLowerCase();
     return this.http.get<Task[]>(this.apiUrl).pipe(
-      map((tasks) =>
-        tasks.filter((t) =>
-          t.title.toLowerCase().includes(term.toLowerCase())
+      map(tasks =>
+        tasks.filter(t =>
+          t.title.toLowerCase().includes(lower) ||
+          t.description.toLowerCase().includes(lower)
         )
       )
     );
   }
 
-  toggleDone(task: Task): Observable<Task> {
-    const updated = {
+  filterByStatus(status: 'pendente' | 'concluida'): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.apiUrl}?status=${status}`);
+  }
+
+  toggleStatus(task: Task): Observable<Task> {
+    const updated: Task = {
       ...task,
       status: task.status === 'pendente' ? 'concluida' : 'pendente',
     };

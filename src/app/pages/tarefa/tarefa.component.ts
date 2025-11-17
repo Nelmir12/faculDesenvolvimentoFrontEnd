@@ -1,53 +1,159 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { SubjectService } from '../../services/subject.service';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Subject, SubjectService } from '../../services/subject.service';
 import { Task, TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-tarefa',
   standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './tarefa.component.html'
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  templateUrl: './tarefa.component.html',
+  styleUrls: ['./tarefa.component.css'],
 })
 export class TarefaComponent implements OnInit {
-  t: Task | null = null;
+  form!: FormGroup;
+  loading = false;
+  error = '';
+  isNew = false;
+  tarefaId!: number;
+
+  subjects: Subject[] = [];
 
   constructor(
+    private fb: FormBuilder,
     private route: ActivatedRoute,
-    private tasks: TaskService,
-    private subjects: SubjectService
+    private router: Router,
+    private taskService: TaskService,
+    private subjectService: SubjectService
   ) {}
 
-  ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.t = this.tasks.getById(id);
+  ngOnInit(): void {
+    this.buildForm();
+    this.loadSubjects();
+
+    const idParam = this.route.snapshot.paramMap.get('id');
+
+    if (idParam === 'nova') {
+      this.isNew = true;
+    } else if (idParam) {
+      this.isNew = false;
+      this.tarefaId = Number(idParam);
+      this.loadTarefa(this.tarefaId);
+    } else {
+      this.router.navigate(['/tarefas']);
+    }
   }
 
-  subjectName(id: number) {
-    return this.subjects.getById(id)?.name || '-';
-  }
-
-  edit() {
-    if (!this.t) return;
-
-    const title = window.prompt('Título', this.t.title);
-    if (title === null) return;
-
-    const due = window.prompt('Data (YYYY-MM-DD)', this.t.due) ?? this.t.due;
-    const status = (window.prompt("Status (todo|doing|done|late)", this.t.status) ?? this.t.status) as Task['status'];
-    const description = window.prompt('Descrição', this.t.description || '') ?? (this.t.description || '');
-
-    this.tasks.update(this.t.id, {
-      title: title.trim() || this.t.title,
-      due: due.trim() || this.t.due,
-      status,
-      description
+  buildForm(): void {
+    this.form = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(5)]],
+      status: ['pendente', [Validators.required]],
+      dueDate: ['', [Validators.required]],
+      subjectId: [null, [Validators.required]],
     });
-
-    // recarrega o objeto atualizado
-    this.t = this.tasks.getById(this.t.id);
   }
 
-  alert(msg: string) { window.alert(msg); } // se quiser manter para reuso
+  loadSubjects(): void {
+    this.subjectService.getAll().subscribe({
+      next: (subjects) => {
+        this.subjects = subjects;
+      },
+      error: () => {
+        this.error = 'Erro ao carregar disciplinas para seleção.';
+      },
+    });
+  }
+
+  loadTarefa(id: number): void {
+    this.loading = true;
+    this.error = '';
+
+    this.taskService.getById(id).subscribe({
+      next: (task: Task) => {
+        this.form.patchValue({
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          dueDate: task.dueDate,
+          subjectId: task.subjectId,
+        });
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Erro ao carregar tarefa.';
+        this.loading = false;
+      },
+    });
+  }
+
+  salvar(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const formValue = this.form.value;
+
+    const payload: Task = {
+      id: this.isNew ? 0 : this.tarefaId,
+      title: formValue.title,
+      description: formValue.description,
+      status: formValue.status,
+      dueDate: formValue.dueDate,
+      subjectId: Number(formValue.subjectId),
+    };
+
+    this.loading = true;
+    this.error = '';
+
+    if (this.isNew) {
+      this.taskService.create(payload).subscribe({
+        next: () => this.router.navigate(['/tarefas']),
+        error: () => {
+          this.error = 'Erro ao criar tarefa.';
+          this.loading = false;
+        },
+      });
+    } else {
+      this.taskService.update(this.tarefaId, payload).subscribe({
+        next: () => this.router.navigate(['/tarefas']),
+        error: () => {
+          this.error = 'Erro ao atualizar tarefa.';
+          this.loading = false;
+        },
+      });
+    }
+  }
+
+  cancelar(): void {
+    this.router.navigate(['/tarefas']);
+  }
+
+  get title() {
+    return this.form.get('title');
+  }
+
+  get description() {
+    return this.form.get('description');
+  }
+
+  get statusCtrl() {
+    return this.form.get('status');
+  }
+
+  get dueDate() {
+    return this.form.get('dueDate');
+  }
+
+  get subjectIdCtrl() {
+    return this.form.get('subjectId');
+  }
 }

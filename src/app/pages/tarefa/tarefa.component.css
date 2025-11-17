@@ -1,0 +1,57 @@
+.tarefa-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 8px;
+  font-size: 14px;
+}
+
+.invalid {
+  border: 1px solid #b00020;
+}
+
+.error {
+  color: #b00020;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.global-error {
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.actions button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.loading {
+  margin-top: 8px;
+}

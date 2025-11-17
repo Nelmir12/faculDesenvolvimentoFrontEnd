@@ -1,0 +1,56 @@
+.tarefas-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.tarefas-page h1 {
+  margin-bottom: 16px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.toolbar input {
+  flex: 1;
+  padding: 8px;
+}
+
+.toolbar select,
+.toolbar button {
+  padding: 8px 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+th,
+td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.status {
+  margin-top: 8px;
+}
+
+.status.error {
+  color: #b00020;
+  font-weight: 600;
+}
+
+.pendente {
+  color: #b36b00;
+  font-weight: 600;
+}
+
+.concluida {
+  color: #0a7b20;
+  font-weight: 600;
+}
