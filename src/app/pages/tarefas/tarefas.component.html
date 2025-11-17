@@ -1,62 +1,73 @@
 <div class="tarefas-page">
-  <h1>Tarefas</h1>
 
-  <div class="toolbar">
+  <h2>Tarefas</h2>
+
+  <div class="search-box">
     <input
       type="text"
-      placeholder="Buscar..."
-      [(ngModel)]="searchTerm"
-      (input)="applyFilter()"
+      [(ngModel)]="search"
+      (ngModelChange)="onSearchChange()"
+      placeholder="Buscar tarefa..."
     />
-
-    <select [(ngModel)]="statusFilter" (change)="applyFilter()">
-      <option value="todas">Todas</option>
-      <option value="pendente">Pendentes</option>
-      <option value="concluida">Concluídas</option>
-    </select>
-
-    <button (click)="novaTarefa()">Nova tarefa</button>
   </div>
 
-  <div *ngIf="loading">Carregando tarefas...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+  <div class="filters">
+    <label>Status:</label>
+    <select [(ngModel)]="statusFilter" (change)="onStatusChange()">
+      <option value="todas">Todas</option>
+      <option value="pendente">Pendente</option>
+      <option value="concluida">Concluída</option>
+    </select>
+  </div>
 
-  <table *ngIf="!loading && filteredTasks.length > 0">
+  <div *ngIf="loading">Carregando...</div>
+  <div *ngIf="error">{{ error }}</div>
+
+  <table *ngIf="!loading && filtered.length > 0">
     <thead>
       <tr>
         <th>Título</th>
         <th>Descrição</th>
         <th>Entrega</th>
+        <th>Disciplina</th>
         <th>Status</th>
-        <th style="width: 230px;">Ações</th>
+        <th>Ações</th>
       </tr>
     </thead>
 
     <tbody>
-      <tr *ngFor="let t of filteredTasks">
+      <tr *ngFor="let t of filtered">
         <td>{{ t.title }}</td>
         <td>{{ t.description }}</td>
-
-        <td>{{ t.dueDate | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ t.due | date: 'shortDate' }}</td>
+        <td>{{ getSubjectName(t.subjectId) }}</td>
 
         <td>
-          <span [ngClass]="t.status">
-            {{ t.status === 'pendente' ? 'Pendente' : 'Concluída' }}
+          <span [ngClass]="{
+            'green': t.status === 'concluida',
+            'red': t.status === 'pendente'
+          }">
+            {{ t.status }}
           </span>
         </td>
 
         <td>
-          <button (click)="editar(t)">Editar</button>
-          <button (click)="alternarStatus(t)">
-            {{ t.status === 'pendente' ? 'Concluir' : 'Reabrir' }}
+          <button (click)="toggleDone(t.id)">
+            {{ t.status === 'concluida' ? 'Desfazer' : 'Concluir' }}
           </button>
-          <button (click)="excluir(t)">Excluir</button>
+
+          <button [routerLink]="['/tarefa', t.id]">Editar</button>
+
+          <button (click)="remove(t.id)" class="danger">
+            Excluir
+          </button>
         </td>
       </tr>
     </tbody>
   </table>
 
-  <p *ngIf="!loading && filteredTasks.length === 0">
+  <div *ngIf="!loading && filtered.length === 0">
     Nenhuma tarefa encontrada.
-  </p>
+  </div>
+
 </div>

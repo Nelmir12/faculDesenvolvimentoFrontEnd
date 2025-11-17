@@ -2,7 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { Task, TaskService } from '../../services/task.service';
+
+import { SubjectService } from '../../services/subject.service';
+import { Task } from '../../services/task.model';
+import { TaskService } from '../../services/task.service';
 
 @Component({
   selector: 'app-tarefas',
@@ -12,30 +15,41 @@ import { Task, TaskService } from '../../services/task.service';
   styleUrls: ['./tarefas.component.css']
 })
 export class TarefasComponent implements OnInit {
-  tasks: Task[] = [];
-  filteredTasks: Task[] = [];
-  searchTerm = '';
-  statusFilter: 'todas' | 'pendente' | 'concluida' = 'todas';
-
   loading = false;
   error = '';
 
+  tasks: Task[] = [];
+  filtered: Task[] = [];
+
+  search = ''; // ALINHADO COM O HTML
+  statusFilter: 'todas' | 'pendente' | 'concluida' = 'todas';
+
+  subjectsCache: { id: number; name: string }[] = [];
+
   constructor(
-    private taskService: TaskService,
+    private tasksService: TaskService,
+    private subjectsService: SubjectService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.loadSubjects();
     this.loadTasks();
   }
 
-  loadTasks(): void {
-    this.loading = true;
-    this.error = '';
+  private loadSubjects(): void {
+    this.subjectsService.getAll().subscribe({
+      next: list =>
+        (this.subjectsCache = list.map(s => ({ id: s.id, name: s.name }))),
+      error: () => (this.subjectsCache = [])
+    });
+  }
 
-    this.taskService.getAll().subscribe({
-      next: tasks => {
-        this.tasks = tasks;
+  private loadTasks(): void {
+    this.loading = true;
+    this.tasksService.getAll().subscribe({
+      next: list => {
+        this.tasks = list;
         this.applyFilter();
         this.loading = false;
       },
@@ -47,45 +61,48 @@ export class TarefasComponent implements OnInit {
   }
 
   applyFilter(): void {
-    let list = [...this.tasks];
+    const termo = this.search.trim().toLowerCase();
 
-    if (this.searchTerm) {
-      const term = this.searchTerm.toLowerCase();
-      list = list.filter(
-        t =>
-          t.title.toLowerCase().includes(term) ||
-          t.description.toLowerCase().includes(term)
-      );
-    }
+    this.filtered = this.tasks.filter(t => {
+      const matchesText =
+        !termo ||
+        t.title.toLowerCase().includes(termo) ||
+        t.description.toLowerCase().includes(termo);
 
-    if (this.statusFilter !== 'todas') {
-      list = list.filter(t => t.status === this.statusFilter);
-    }
+      const matchesStatus =
+        this.statusFilter === 'todas' || t.status === this.statusFilter;
 
-    this.filteredTasks = list;
+      return matchesText && matchesStatus;
+    });
+  }
+
+  onSearchChange(): void {
+    this.applyFilter();
+  }
+
+  onStatusChange(): void {
+    this.applyFilter();
   }
 
   novaTarefa(): void {
-    this.router.navigate(['/tarefa', 'nova']);
+    this.router.navigate(['/tarefa/nova']);
   }
 
-  editar(task: Task): void {
-    this.router.navigate(['/tarefa', task.id]);
-  }
+ toggleDone(id: number): void {
+  this.tasksService.toggleDone(id).subscribe(() => {
+    this.loadTasks();
+  });
+}
 
-  excluir(task: Task): void {
-    if (!confirm(`Excluir tarefa "${task.title}"?`)) return;
+  remove(id: number): void {
+    if (!confirm('Tem certeza?')) return;
 
-    this.taskService.delete(task.id).subscribe({
-      next: () => this.loadTasks(),
-      error: () => (this.error = 'Erro ao excluir tarefa.')
+    this.tasksService.remove(id).subscribe(() => {
+      this.loadTasks();
     });
   }
 
-  alternarStatus(task: Task): void {
-    this.taskService.toggleStatus(task).subscribe({
-      next: () => this.loadTasks(),
-      error: () => (this.error = 'Erro ao atualizar status.')
-    });
+  getSubjectName(id: number): string {
+    return this.subjectsCache.find(s => s.id === id)?.name ?? '-';
   }
 }

@@ -1,49 +1,69 @@
-<h2>Dashboard</h2>
+<!-- src/app/pages/dashboard/dashboard.component.html -->
+<div class="dashboard">
+  <h1>Dashboard</h1>
 
-<div class="kpis">
-  <div class="kpi">
-    <h3>Total</h3>
-    <p>{{ total }}</p>
+  <div *ngIf="loading" class="info">
+    Carregando tarefas...
   </div>
 
-  <div class="kpi">
-    <h3>Pendentes</h3>
-    <p>{{ pendentes }}</p>
+  <div *ngIf="error" class="error">
+    {{ error }}
   </div>
 
-  <div class="kpi">
-    <h3>Concluídas</h3>
-    <p>{{ concluidas }}</p>
-  </div>
+  <section class="kpis" *ngIf="!loading && !error">
+    <div class="kpi-card">
+      <h2>Total de tarefas</h2>
+      <p>{{ kpi.total }}</p>
+    </div>
+
+    <div class="kpi-card">
+      <h2>Pendentes</h2>
+      <p>{{ kpi.pendentes }}</p>
+    </div>
+
+    <div class="kpi-card">
+      <h2>Concluídas</h2>
+      <p>{{ kpi.concluidas }}</p>
+    </div>
+  </section>
+
+  <section class="proximas" *ngIf="kpi.proximas.length > 0">
+    <div class="header">
+      <h2>Próximas tarefas</h2>
+      <button type="button" (click)="refresh()">Atualizar</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Disciplina</th>
+          <th>Título</th>
+          <th>Entrega</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of kpi.proximas">
+          <td>{{ getSubjectName(t.subjectId) }}</td>
+          <td>{{ t.title }}</td>
+          <td>{{ t.due | date: 'shortDate' }}</td>
+          <td>
+            <span
+              class="tag"
+              [ngClass]="{
+                green: t.status === 'concluida',
+                red: t.status === 'pendente'
+              }"
+            >
+              {{ t.status === 'concluida' ? 'Concluída' : 'Pendente' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section *ngIf="!loading && !error && kpi.proximas.length === 0">
+    <p>Não há tarefas próximas de vencimento.</p>
+  </section>
 </div>
-
-<h3>Próximas tarefas</h3>
-
-<table *ngIf="proximas.length > 0">
-  <thead>
-    <tr>
-      <th>Título</th>
-      <th>Disciplina</th>
-      <th>Entrega</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr *ngFor="let t of proximas">
-      <td>{{ t.title }}</td>
-      <td>{{ getSubjectName(t.subjectId) }}</td>
-      <td>{{ t.dueDate | date:'shortDate' }}</td>
-      <td>
-        <span [ngClass]="{
-          'yellow': t.status === 'pendente',
-          'green': t.status === 'concluida'
-        }">
-          {{ t.status }}
-        </span>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<p *ngIf="proximas.length === 0">Nenhuma tarefa cadastrada.</p>
