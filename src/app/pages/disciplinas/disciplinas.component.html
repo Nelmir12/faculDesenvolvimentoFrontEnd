@@ -9,20 +9,23 @@
       (input)="onSearchChange()"
     />
 
-    <button routerLink="/disciplina/nova">
-      Nova disciplina
-    </button>
+    <button (click)="novaDisciplina()">Nova disciplina</button>
   </div>
 
-  <div *ngIf="loading">Carregando...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="loading" class="status">
+    Carregando disciplinas...
+  </div>
+
+  <div *ngIf="error" class="status error">
+    {{ error }}
+  </div>
 
   <table *ngIf="!loading && filteredSubjects.length > 0">
     <thead>
       <tr>
         <th>Nome</th>
         <th>Descrição</th>
-        <th>Ações</th>
+        <th style="width: 180px;">Ações</th>
       </tr>
     </thead>
     <tbody>
@@ -30,14 +33,14 @@
         <td>{{ subject.name }}</td>
         <td>{{ subject.description }}</td>
         <td>
-          <button [routerLink]="['/disciplina', subject.id]">Detalhes</button>
-          <button (click)="deleteSubject(subject)">Excluir</button>
+          <button (click)="verDetalhe(subject)">Detalhes</button>
+          <button (click)="excluir(subject)">Excluir</button>
         </td>
       </tr>
     </tbody>
   </table>
 
-  <p *ngIf="!loading && filteredSubjects.length === 0">
+  <p *ngIf="!loading && !error && filteredSubjects.length === 0">
     Nenhuma disciplina encontrada.
   </p>
 </div>

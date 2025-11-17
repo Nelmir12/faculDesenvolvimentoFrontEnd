@@ -1,8 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { Subject, SubjectService } from '../../services/subject.service';
 
 @Component({
   selector: 'app-disciplinas',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './disciplinas.component.html',
   styleUrls: ['./disciplinas.component.css'],
 })
@@ -13,7 +18,10 @@ export class DisciplinasComponent implements OnInit {
   loading = false;
   error = '';
 
-  constructor(private subjectService: SubjectService) {}
+  constructor(
+    private subjectService: SubjectService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadSubjects();
@@ -36,10 +44,6 @@ export class DisciplinasComponent implements OnInit {
     });
   }
 
-  onSearchChange(): void {
-    this.applyFilter();
-  }
-
   applyFilter(): void {
     if (!this.searchTerm) {
       this.filteredSubjects = this.subjects;
@@ -52,7 +56,19 @@ export class DisciplinasComponent implements OnInit {
     );
   }
 
-  deleteSubject(subject: Subject): void {
+  onSearchChange(): void {
+    this.applyFilter();
+  }
+
+  novaDisciplina(): void {
+    this.router.navigate(['/disciplina', 'nova']);
+  }
+
+  verDetalhe(subject: Subject): void {
+    this.router.navigate(['/disciplina', subject.id]);
+  }
+
+  excluir(subject: Subject): void {
     if (!confirm(`Deseja realmente excluir a disciplina "${subject.name}"?`)) {
       return;
     }
