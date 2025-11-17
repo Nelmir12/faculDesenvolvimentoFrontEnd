@@ -6,6 +6,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { DisciplinaComponent } from './pages/disciplina/disciplina.component';
 import { DisciplinasComponent } from './pages/disciplinas/disciplinas.component';
 
+
+
 import { TarefaComponent } from './pages/tarefa/tarefa.component';
 import { TarefasComponent } from './pages/tarefas/tarefas.component';
 

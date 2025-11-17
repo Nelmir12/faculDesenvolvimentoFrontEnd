@@ -7,7 +7,7 @@ import {
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Subject, SubjectService } from '../../services/subject.service';
+import { SubjectService } from '../../services/subject.service';
 import { Task, TaskService } from '../../services/task.service';
 
 @Component({
@@ -15,16 +15,14 @@ import { Task, TaskService } from '../../services/task.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './tarefa.component.html',
-  styleUrls: ['./tarefa.component.css'],
+  styleUrls: ['./tarefa.component.css']
 })
 export class TarefaComponent implements OnInit {
   form!: FormGroup;
   loading = false;
   error = '';
-  isNew = false;
-  tarefaId!: number;
-
-  subjects: Subject[] = [];
+  taskId!: number;
+  subjects: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -36,43 +34,35 @@ export class TarefaComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildForm();
-    this.loadSubjects();
+
+    // carrega disciplinas pro select
+    this.subjectService.getAll().subscribe({
+      next: (list) => (this.subjects = list),
+      error: () => (this.error = 'Erro ao carregar disciplinas.')
+    });
 
     const idParam = this.route.snapshot.paramMap.get('id');
 
-    if (idParam === 'nova') {
-      this.isNew = true;
-    } else if (idParam) {
-      this.isNew = false;
-      this.tarefaId = Number(idParam);
-      this.loadTarefa(this.tarefaId);
-    } else {
+    if (!idParam) {
       this.router.navigate(['/tarefas']);
+      return;
     }
+
+    this.taskId = Number(idParam);
+    this.loadTask(this.taskId);
   }
 
   buildForm(): void {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(5)]],
-      status: ['pendente', [Validators.required]],
-      dueDate: ['', [Validators.required]],
+      description: [''],
       subjectId: [null, [Validators.required]],
+      dueDate: ['', [Validators.required]],
+      status: ['pendente', [Validators.required]]
     });
   }
 
-  loadSubjects(): void {
-    this.subjectService.getAll().subscribe({
-      next: (subjects) => {
-        this.subjects = subjects;
-      },
-      error: () => {
-        this.error = 'Erro ao carregar disciplinas para seleção.';
-      },
-    });
-  }
-
-  loadTarefa(id: number): void {
+  loadTask(id: number): void {
     this.loading = true;
     this.error = '';
 
@@ -81,16 +71,16 @@ export class TarefaComponent implements OnInit {
         this.form.patchValue({
           title: task.title,
           description: task.description,
-          status: task.status,
-          dueDate: task.dueDate,
           subjectId: task.subjectId,
+          dueDate: task.dueDate,
+          status: task.status
         });
         this.loading = false;
       },
       error: () => {
         this.error = 'Erro ao carregar tarefa.';
         this.loading = false;
-      },
+      }
     });
   }
 
@@ -100,37 +90,21 @@ export class TarefaComponent implements OnInit {
       return;
     }
 
-    const formValue = this.form.value;
-
     const payload: Task = {
-      id: this.isNew ? 0 : this.tarefaId,
-      title: formValue.title,
-      description: formValue.description,
-      status: formValue.status,
-      dueDate: formValue.dueDate,
-      subjectId: Number(formValue.subjectId),
+      id: this.taskId,
+      ...this.form.value
     };
 
     this.loading = true;
     this.error = '';
 
-    if (this.isNew) {
-      this.taskService.create(payload).subscribe({
-        next: () => this.router.navigate(['/tarefas']),
-        error: () => {
-          this.error = 'Erro ao criar tarefa.';
-          this.loading = false;
-        },
-      });
-    } else {
-      this.taskService.update(this.tarefaId, payload).subscribe({
-        next: () => this.router.navigate(['/tarefas']),
-        error: () => {
-          this.error = 'Erro ao atualizar tarefa.';
-          this.loading = false;
-        },
-      });
-    }
+    this.taskService.update(this.taskId, payload).subscribe({
+      next: () => this.router.navigate(['/tarefas']),
+      error: () => {
+        this.error = 'Erro ao salvar tarefa.';
+        this.loading = false;
+      }
+    });
   }
 
   cancelar(): void {
@@ -141,19 +115,11 @@ export class TarefaComponent implements OnInit {
     return this.form.get('title');
   }
 
-  get description() {
-    return this.form.get('description');
-  }
-
-  get statusCtrl() {
-    return this.form.get('status');
+  get subjectId() {
+    return this.form.get('subjectId');
   }
 
   get dueDate() {
     return this.form.get('dueDate');
-  }
-
-  get subjectIdCtrl() {
-    return this.form.get('subjectId');
   }
 }

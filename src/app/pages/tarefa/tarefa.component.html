@@ -1,10 +1,9 @@
 <div class="tarefa-page">
-  <h1 *ngIf="isNew">Nova tarefa</h1>
-  <h1 *ngIf="!isNew">Editar tarefa</h1>
+  <h1>Editar tarefa</h1>
 
-  <form [formGroup]="form!" (ngSubmit)="salvar()">
+  <form [formGroup]="form" (ngSubmit)="salvar()">
     <div class="form-group">
-      <label for="title">Título</label>
+      <label for="title">Título *</label>
       <input
         id="title"
         type="text"
@@ -22,97 +21,49 @@
 
     <div class="form-group">
       <label for="description">Descrição</label>
-      <textarea
-        id="description"
-        rows="4"
-        formControlName="description"
-        [class.invalid]="
-          description?.invalid && (description?.touched || description?.dirty)
-        "
-      ></textarea>
-      <div
-        class="error"
-        *ngIf="
-          description?.errors &&
-          (description?.touched || description?.dirty)
-        "
-      >
-        <span *ngIf="description?.errors?.['required']">
-          A descrição é obrigatória.
-        </span>
-        <span *ngIf="description?.errors?.['minlength']">
-          A descrição deve ter pelo menos
-          {{ description?.errors?.['minlength']?.requiredLength }}
-          caracteres.
-        </span>
-      </div>
+      <textarea id="description" rows="3" formControlName="description"></textarea>
     </div>
 
     <div class="form-group">
-      <label for="status">Status</label>
+      <label for="subjectId">Disciplina *</label>
       <select
-        id="status"
-        formControlName="status"
-        [class.invalid]="statusCtrl?.invalid && (statusCtrl?.touched || statusCtrl?.dirty)"
+        id="subjectId"
+        formControlName="subjectId"
+        [class.invalid]="subjectId?.invalid && (subjectId?.touched || subjectId?.dirty)"
       >
-        <option value="pendente">Pendente</option>
-        <option value="concluida">Concluída</option>
+        <option value="">Selecione...</option>
+        <option *ngFor="let s of subjects" [value]="s.id">
+          {{ s.name }}
+        </option>
       </select>
-      <div
-        class="error"
-        *ngIf="statusCtrl?.errors && (statusCtrl?.touched || statusCtrl?.dirty)"
-      >
-        <span *ngIf="statusCtrl?.errors?.['required']">
-          O status é obrigatório.
+      <div class="error" *ngIf="subjectId?.errors && (subjectId?.touched || subjectId?.dirty)">
+        <span *ngIf="subjectId?.errors?.['required']">
+          Selecione uma disciplina.
         </span>
       </div>
     </div>
 
     <div class="form-group">
-      <label for="dueDate">Data de entrega</label>
+      <label for="dueDate">Data de entrega *</label>
       <input
         id="dueDate"
         type="date"
         formControlName="dueDate"
-        [class.invalid]="
-          dueDate?.invalid && (dueDate?.touched || dueDate?.dirty)
-        "
+        [class.invalid]="dueDate?.invalid && (dueDate?.touched || dueDate?.dirty)"
       />
-      <div
-        class="error"
-        *ngIf="dueDate?.errors && (dueDate?.touched || dueDate?.dirty)"
-      >
+      <div class="error" *ngIf="dueDate?.errors && (dueDate?.touched || dueDate?.dirty)">
         <span *ngIf="dueDate?.errors?.['required']">
-          A data de entrega é obrigatória.
+          Informe uma data de entrega.
         </span>
       </div>
     </div>
 
     <div class="form-group">
-      <label for="subjectId">Disciplina</label>
-      <select
-        id="subjectId"
-        formControlName="subjectId"
-        [class.invalid]="
-          subjectIdCtrl?.invalid &&
-          (subjectIdCtrl?.touched || subjectIdCtrl?.dirty)
-        "
-      >
-        <option [ngValue]="null">Selecione uma disciplina</option>
-        <option *ngFor="let s of subjects" [ngValue]="s.id">
-          {{ s.name }}
-        </option>
+      <label for="status">Status *</label>
+      <select id="status" formControlName="status">
+        <option value="pendente">Pendente</option>
+        <option value="concluida">Concluída</option>
       </select>
-      <div
-        class="error"
-        *ngIf="
-          subjectIdCtrl?.errors && (subjectIdCtrl?.touched || subjectIdCtrl?.dirty)
-        "
-      >
-        <span *ngIf="subjectIdCtrl?.errors?.['required']">
-          A disciplina é obrigatória.
-        </span>
-      </div>
     </div>
 
     <div *ngIf="error" class="error global-error">
@@ -121,8 +72,8 @@
 
     <div class="actions">
       <button type="button" (click)="cancelar()">Cancelar</button>
-      <button type="submit" [disabled]="loading || form!.invalid">
-        {{ isNew ? 'Criar' : 'Salvar' }}
+      <button type="submit" [disabled]="loading || form.invalid">
+        Salvar
       </button>
     </div>
 
