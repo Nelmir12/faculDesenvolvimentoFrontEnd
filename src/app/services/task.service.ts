@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Task } from './task.model';
+import { Task, TaskStatus } from './task.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,12 @@ export class TaskService {
     }
   ]);
 
+  /** Retorna todas as tarefas */
   getAll(): Observable<Task[]> {
     return this.tasks$.asObservable();
   }
 
+  /** Busca tarefa por ID */
   getById(id: number): Observable<Task | undefined> {
     return new Observable(sub => {
       const result = this.tasks$.value.find(t => t.id === id);
@@ -30,12 +32,17 @@ export class TaskService {
     });
   }
 
-  add(data: Omit<Task, 'id'>): Observable<Task> {
+  /** Criar nova tarefa */
+  create(data: Partial<Task>): Observable<Task> {
     const current = this.tasks$.value;
 
     const newTask: Task = {
-      ...data,
-      id: current.length > 0 ? Math.max(...current.map(t => t.id)) + 1 : 1
+      id: current.length > 0 ? Math.max(...current.map(t => t.id)) + 1 : 1,
+      title: data.title ?? '',
+      description: data.description ?? '',
+      due: data.due ?? '',
+      subjectId: data.subjectId ?? 0,
+      status: (data.status as TaskStatus) ?? 'pendente'
     };
 
     this.tasks$.next([...current, newTask]);
@@ -43,7 +50,7 @@ export class TaskService {
     return new BehaviorSubject(newTask).asObservable();
   }
 
-  /** Atualizar tarefa */
+  /** Atualiza uma tarefa existente */
   update(id: number, data: Partial<Task>): Observable<Task> {
     const current = this.tasks$.value;
     const index = current.findIndex(t => t.id === id);
@@ -62,7 +69,7 @@ export class TaskService {
     return new BehaviorSubject(updated).asObservable();
   }
 
-  /** Alternar status */
+  /** Alternar status pendente <-> concluida */
   toggleDone(id: number): Observable<Task> {
     const current = this.tasks$.value;
     const index = current.findIndex(t => t.id === id);
@@ -82,9 +89,10 @@ export class TaskService {
     return new BehaviorSubject(updated).asObservable();
   }
 
+  /** Remove uma tarefa */
   remove(id: number): Observable<void> {
-    const current = this.tasks$.value.filter(t => t.id !== id);
-    this.tasks$.next(current);
+    const updated = this.tasks$.value.filter(t => t.id !== id);
+    this.tasks$.next(updated);
     return new BehaviorSubject<void>(undefined).asObservable();
   }
 }
