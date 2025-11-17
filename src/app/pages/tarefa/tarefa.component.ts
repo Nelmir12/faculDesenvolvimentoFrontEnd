@@ -35,11 +35,10 @@ export class TarefaComponent {
       title: ['', Validators.required],
       description: [''],
       due: ['', Validators.required],
-      subjectId: ['', Validators.required],
+      subjectId: [null, Validators.required],
       status: ['pendente', Validators.required]
     });
 
-    // CORRIGIDO: getAll()
     this.subjects.getAll().subscribe(s => (this.subjectsCache = s));
 
     this.tasks.getById(this.id).subscribe({
