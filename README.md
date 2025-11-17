@@ -102,6 +102,7 @@ fix: ajustar validacao de disciplina
 Isso ajuda a manter o histórico mais organizado e facilita entender o que foi feito em cada etapa.
 
 5. Como rodar o projeto
+
 npm i npx ng serve -o
 
 Em outro terminal (Rodar o JSON)
