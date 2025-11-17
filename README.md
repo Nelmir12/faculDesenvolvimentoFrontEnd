@@ -3,6 +3,7 @@ Membros do grupo:
 
 Nelmir Junior
 Lucas Bagno
+
 1. Descrição da aplicação
 O TrackStudy é uma aplicação web simples para organizar disciplinas e tarefas acadêmicas. A ideia é que o aluno consiga:
 
@@ -17,6 +18,7 @@ Uso de Angular com rotas, componentes standalone e diretivas;
 Uso de Services para regras de negócio;
 Consumo de dados via HttpClient a partir de um JSON Server;
 Uso de formulários reativos (Reactive Forms) com Validators.
+
 2. Tecnologias e estrutura
 Angular (standalone components)
 Rotas configuradas em src/app/app.routes.ts
@@ -35,6 +37,7 @@ Login
 Cadastro/Edição de Disciplina
 Cadastro/Edição de Tarefa
 Com FormBuilder, FormGroup, FormControl e Validators
+
 3. Páginas e funcionalidades
 Login (/login)
 Formulário reativo de e-mail e senha.
@@ -86,6 +89,7 @@ Ao salvar, envia PATCH /tasks/:id.
 Perfil (/perfil)
 Tela simples mostrando dados básicos do usuário logado (nome, e-mail).
 Completa o fluxo de login.
+
 4. Git, GitHub e Commits Semânticos
 O projeto foi versionado com Git e publicado em um repositório no GitHub.
 
